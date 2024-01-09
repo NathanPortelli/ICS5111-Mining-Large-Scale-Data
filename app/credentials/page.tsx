@@ -58,6 +58,7 @@ const Credentials = () => {
           gender: 0,
           height: 0,
           weight: 0,
+          bmi: 0,
         });
   
         setError('Registration successful!');
@@ -70,56 +71,81 @@ const Credentials = () => {
     };
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between">
-            <section className="mt-8 mb-8">
-                <h2 className="text-2xl font-semibold mb-4 text-white">{isRegistering ? 'Register' : 'Sign In'}</h2>
-                <form>
-                    <div className="mb-6">
-                        <div className="grid">
-                            {isRegistering && (
-                            <>
-                                <label className="block mb-2 font-semibold text-white mt-4">Name:</label>
-                                <input type="name" onChange={(e) => setName(e.target.value)} className="w-full p-2 border rounded" required />
-                            </>
-                            )}                            
+        <main className="flex min-h-screen flex-col items-center justify-center bg-gray-800">
+            <h1 className="mt-8 text-4xl font-semibold text-white mb-8">Diet Recommender</h1>
+            <section className="bg-white p-8 rounded-md shadow-md w-full max-w-md">
+                <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">
+                    {isRegistering ? 'Create an Account' : 'Sign In'}
+                </h2>
+                <form className="space-y-4">
+                    {isRegistering && (
+                        <div className="mb-4">
+                            <label className="block text-sm font-semibold text-gray-600">Name:</label>
+                            <input
+                                type="name"
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
+                                required
+                            />
+                        </div>
+                    )}
 
-                            <label className="block mb-2 font-semibold text-white mt-4">Email:</label>
-                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-2 border rounded" required />
+                    <div className="mb-4">
+                        <label className="block text-sm font-semibold text-gray-600">Email:</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                            <label className="block mb-2 font-semibold mt-4 text-white">Password:</label>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border rounded" required />
+                    <div className="mb-4">
+                        <label className="block text-sm font-semibold text-gray-600">Password:</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
+                            required
+                        />
+                    </div>
 
-                            {isRegistering && (
-                            <>
-                                <label className="block mb-2 font-semibold mt-4 text-white">Confirm Password:</label>
-                                <input
+                    {isRegistering && (
+                        <div className="mb-4">
+                            <label className="block text-sm font-semibold text-gray-600">Confirm Password:</label>
+                            <input
                                 type="password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
-                                className="w-full p-2 border rounded"
-                                />
-                            </>
-                            )}
-
-                            <button type="button" onClick={isRegistering ? handleRegister : handleSignIn} className="text-white w-full p-2 mt-4 mb-4 bg-blue-500 text-white rounded transition duration-300 hover:bg-blue-600">
-                                {isRegistering ? 'Register' : 'Sign In'}
-                            </button>
-
-                            <p className="text-white cursor-pointer hover:underline" onClick={() => setIsRegistering(!isRegistering)}>
-                                {isRegistering ? 'Already have an account? Sign In' : 'Don\'t have an account? Register'}
-                            </p>
+                                className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
+                            />
                         </div>
-                    </div>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={isRegistering ? handleRegister : handleSignIn}
+                        className="w-full px-4 py-2 bg-blue-500 text-white rounded-md transition duration-300 hover:bg-blue-600"
+                    >
+                        {isRegistering ? 'Register' : 'Sign In'}
+                    </button>
+
+                    <p className="text-sm text-gray-600 text-center cursor-pointer hover:underline" onClick={() => setIsRegistering(!isRegistering)}>
+                        {isRegistering ? 'Already have an account? Sign In' : "Don't have an account? Register"}
+                    </p>
                 </form>
             </section>
-        {/* Snackbar for displaying errors */}
-        <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={6000}
-            onClose={handleSnackbarClose}
-            message={error || ''}
-        />
+
+            {/* Snackbar for displaying errors */}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                message={error || ''}
+            />
         </main>
     );
 };

@@ -19,9 +19,9 @@ const Header = () => {
             Diet Recommender
         </h1>
         <nav className="flex space-x-4">
-          <Link href="/" className='pr-4'> Home </Link>
+          <Link href="/" className='pr-4'> Diet </Link>
+          <Link href="/" className='pr-4'> Food </Link>
           <Link href="/" className='pr-4'> History </Link>
-          <Link href="/" className='pr-4'> Preferences </Link>
         </nav>
       </div>
       <div className="relative">
