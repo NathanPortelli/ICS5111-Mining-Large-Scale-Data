@@ -10,7 +10,7 @@ import FoodCard from './foodCard';
 const FoodMenu: FC = () => {
     return (
       <main className="flex min-h-screen flex-col justify-center bg-gray-800">
-        <h1 className="mt-8 mb-2 text-4xl font-semibold text-white">Food Menu</h1>
+        <h1 className="mt-8 mb-2 text-4xl font-semibold text-white">Food Recommendations</h1>
         <p className="text-xl text-white">Pick one meal from each menu:</p>
   
         {/* Morning Section */}

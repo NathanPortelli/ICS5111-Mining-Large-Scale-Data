@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -19,6 +20,14 @@ export default function Home() {
   const [recommendedKcal, setRecommendedKcal] = useState(0);
   const [goal, setGoal] = useState("");
 
+  const router = useRouter();
+  const isLoggedIn = auth.currentUser !== null; // Check if user is logged in
+  // If user is not logged in
+  if (!isLoggedIn) {
+    router.replace('/credentials');
+    return null; // Prevent rendering rest
+  }
+
   const onSubmit = () => {
     setShowFoodMenu(true);
   };
@@ -35,7 +44,7 @@ export default function Home() {
       <h1 className="mt-8 text-6xl font-semibold text-white mb-6 text-center">Personalised Diet Recommender</h1>
       <h1 className="mt-8 mb-1 text-4xl font-semibold text-white ml-9">Your Details</h1>
       <div className='items-center justify-center ml-9 mr-9 mb-9'>
-        <p className="text-xl text-white mb-5">Please ensure that the following information is accurate:</p>
+        <p className="text-xl text-white mb-5">Please ensure that the following information is accurate.</p>
         <div className="mb-2 pl-9 pr-9 p-2 border-2 bg-gray-600 rounded-md shadow-md">
           <div className="mb-5 flex flex-wrap justify-center">
             {/* Personal Information Section */}
@@ -55,7 +64,7 @@ export default function Home() {
         </div>
         {/* Goals Section */}
         <h3 className="mt-8 text-3xl font-semibold text-white">Goals</h3>
-        <p className="text-xl mb-4 text-white">Choose your diet plan:</p>
+        <p className="text-xl mb-4 text-white">Choose your diet plan.</p>
         <div className="grid grid-cols-1 mb-4 md:grid-cols-3 gap-6">
           {['Weight Loss', 'Weight Gain', 'Maintain'].map((goal) => (
             <div key={goal} className="rounded-md shadow-md text-center">
@@ -64,7 +73,7 @@ export default function Home() {
                 className="w-full px-4 py-2 bg-blue-500 text-white rounded-md transition duration-300 hover:bg-blue-600"
                 onClick={() => openDropdown(goal)}
               >
-                {goal} {goal === 'Weight Loss' ? '🏋️‍♂️' : goal === 'Weight Gain' ? '🏋️‍♀️' : '⚖️'}
+                {goal} {goal === 'Weight Loss' ? '🔥' : goal === 'Weight Gain' ? '🍖' : '⚖️'}
               </button>
             </div>
           ))}

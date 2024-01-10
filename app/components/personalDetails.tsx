@@ -6,8 +6,6 @@ import { auth, db } from './../firebase';
 
 import { Snackbar } from '@mui/material';
 
-// todo: Issue -- On refresh data does not appear
-
 const PersonalDetails: FC = () => {
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);

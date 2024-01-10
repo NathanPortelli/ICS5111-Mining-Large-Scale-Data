@@ -10,18 +10,15 @@ import PersonalDetails from './../components/personalDetails';
 import { NextPage } from 'next';
 import { Snackbar } from '@mui/material';
 
+import withAuth from './../withAuth';
+
 
 const Account = () => {
   const uid = auth.currentUser?.uid;
   const [currentTab, setCurrentTab] = useState('account');
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [name, setName] = useState('');
-
-  const toggleDropdown = () => {
-    setShowDropdown((prev) => !prev);
-  };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -145,4 +142,4 @@ const Account = () => {
   );
 };
 
-export default Account;
+export default withAuth(Account);
