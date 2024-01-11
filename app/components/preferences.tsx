@@ -135,7 +135,7 @@ const Preferences: FC = () => {
                     <>
                       <MenuItem value="any">❓ Any</MenuItem>
                       <MenuItem value="any">🥚 Eggs</MenuItem>
-                      <MenuItem value="any">🥛v  Yogurt</MenuItem>
+                      <MenuItem value="any">🥛 Yogurt</MenuItem>
                       <MenuItem value="any">🥣 Oats</MenuItem>
                     </>
                   ) : (
