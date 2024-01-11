@@ -109,11 +109,9 @@ const Preferences: FC = () => {
       {/* Food Preferences Section */}
       <div className="bg-white p-8 rounded-md shadow-md">
         {" "}
-        {/* Increased padding */}
-        <p className="mb-4 font-semibold text-2xl text-gray-800">
+        <p className="mb-4 font-semibold text-gray-800">
           Please select the type of food you want to eat:
         </p>{" "}
-        {/* Increased font size */}
         <div className="mt-6 grid grid-cols-3 gap-4">
           {["Breakfast", "Lunch", "Dinner"].map((meal, index) => (
             <div key={index}>

@@ -46,7 +46,7 @@ const Header = () => {
       <div className="relative">
         <div className="relative cursor-pointer" onClick={toggleDropdown}>
           <div className="flex items-center space-x-2 cursor-pointer">
-            <p className='font-semibold'>{name}</p>
+            <p className='font-semibold mr-2'>{name}</p>
             <FaUser className="text-2xl" />
           </div>
         </div>

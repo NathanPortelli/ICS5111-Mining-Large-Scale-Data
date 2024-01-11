@@ -9,8 +9,6 @@ import { Snackbar } from '@mui/material';
 import Header from './../components/header';
 import withAuth from './../withAuth';
 
-import moment from 'moment';
-
 interface Meal {
   date: Timestamp;
   email: string;

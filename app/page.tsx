@@ -42,7 +42,7 @@ export default function Home() {
       <div className="text-center mb-4">
         <button
           type="button"
-          className="text-2xl rounded-md shadow-md px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue transition duration-300"
+          className="text-2xl font-bold rounded-md shadow-md px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue transition duration-300"
           onClick={handleButtonClick}
         >
           Click here to get started
