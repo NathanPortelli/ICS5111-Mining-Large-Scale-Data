@@ -1,80 +1,94 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import FoodCard from './../components/foodCard';
-import { db, auth } from './../firebase';
+import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { auth, db } from './../firebase';
+
+import { Snackbar } from '@mui/material';
 
 import Header from './../components/header';
-
 import withAuth from './../withAuth';
 
-// todo: Server data
-type Meal = {
-    name: string;
-    image: string;
-    description: string;
-    ingredients: string[];
-};
+import moment from 'moment';
 
-type MealDay = {
-    date: string;
-    period: string;
-    meals: Meal[];
-};
-
-//todo: Server data
-type MealHistoryDocument = {
-    userEmail: string;
-    mealHistory: MealDay[];
-};
+interface Meal {
+  date: Timestamp;
+  email: string;
+  meal: string;
+  period: string;
+}
 
 const MealHistory = () => {
-    const [mealHistory, setMealHistory] = useState<MealDay[]>([]);
-  
-    useEffect(() => {
-      const fetchMealHistory = async () => {
-        const uid = auth.currentUser?.uid;
-        if (uid) {
-          const userDocRef = doc(db, 'users', uid);
-          const userDocSnapshot = await getDoc(userDocRef);
-  
-          if (userDocSnapshot.exists()) {
-            const userData = userDocSnapshot.data() as MealHistoryDocument;
-            setMealHistory(userData.mealHistory || []);
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  useEffect(() => {
+    const userEmail = auth.currentUser?.email;
+    if (userEmail) {
+      const q = query(
+        collection(db, 'mealHistory'),
+        where('email', '==', userEmail)
+      );
+
+      const fetchData = async () => {
+        try {
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            console.log('No history found.');
+            return;
           }
+
+          const mealData = querySnapshot.docs.map((doc) => doc.data() as Meal);
+          setMeals(mealData);
+        } catch (error) {
+          setError('Error fetching history: ' + error.message);
+          setSnackbarOpen(true);
         }
       };
-      fetchMealHistory();
-    }, []);
-  
-    return (
-      <main className="flex min-h-screen flex-col bg-gray-800">
-        <Header />
-  
-        <section className="mt-8 ml-9 mr-9">
-          <h1 className="text-4xl font-semibold text-white mb-6">Meal History</h1>
-  
-          {mealHistory.map((mealEntry, index) => (
-            <div key={index} className="mb-8">
-              <h2 className="text-2xl font-semibold text-white mb-4">{mealEntry.date}</h2>
-  
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {mealEntry.meals.map((meal, mealIndex) => (
-                  <FoodCard
-                    key={mealIndex}
-                    name={meal.name}
-                    image={meal.image}
-                    description={meal.description}
-                    ingredients={meal.ingredients}
-                  />
-                ))}
-              </div>
+
+      fetchData();
+    }
+  }, []);
+
+  return (
+    <main className="flex min-h-screen flex-col bg-gray-800">
+      <Header />
+      <section className="mt-8 ml-9 mr-9">
+        <h1 className="text-4xl font-semibold text-white mb-6">Meal History</h1>
+        {meals.map((meal, index) => (
+          <div key={index}>
+            <div className="bg-white p-4 rounded-md shadow-md">
+              <h2 className="text-xl mb-3">
+                {meal.date.toDate().toLocaleDateString('en-US', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })} | {meal.period.charAt(0).toUpperCase() + meal.period.slice(1)}
+              </h2>
+              {/* //todo change with full meal details */}
+              {/* <img src={} alt={} className="mb-2 rounded-md" /> */}
+              <h3 className="text-lg font-semibold mb-2">
+                {meal.meal}
+              </h3>
             </div>
-          ))}
-        </section>
-      </main>
-    );
-  };
-  
-  export default withAuth(MealHistory);
+          </div>
+        ))}
+      </section>
+      {/* Snackbar for displaying errors */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={error || ''}
+      />
+    </main>
+  );
+};
+
+export default withAuth(MealHistory);

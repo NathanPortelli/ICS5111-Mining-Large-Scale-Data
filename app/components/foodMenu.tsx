@@ -13,11 +13,11 @@ const FoodMenu: FC = () => {
         <h1 className="mt-8 mb-2 text-4xl font-semibold text-white">Food Recommendations</h1>
         <p className="text-xl text-white">Pick one meal from each menu:</p>
   
-        {/* Morning Section */}
+        {/* Breakfast Section */}
         <div className="mt-8 bg-yellow-200 p-6 rounded-md shadow-md">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Morning Menu</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Breakfast Menu</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {morningMenuItems.map((item) => (
+            {breakfastMenuItems.map((item) => (
               <FoodCard key={item.id} {...item} />
             ))}
           </div>
@@ -56,8 +56,8 @@ interface FoodMenuItem {
 }
 
 // todo: Replace with server data
-const morningMenuItems: FoodMenuItem[] = [
-    { id: '1', name: 'Coco Pops', image: 'morning.jpg', description: 'Breakfast option', ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'] },
+const breakfastMenuItems: FoodMenuItem[] = [
+    { id: '1', name: 'Coco Pops', image: 'breakfast.jpg', description: 'Breakfast option', ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'] },
 ];
 
 const lunchMenuItems: FoodMenuItem[] = [

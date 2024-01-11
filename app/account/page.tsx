@@ -5,6 +5,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from './../firebase';
 
 import Header from './../components/header';
+import PreferenceAllergies from '../components/preferencesAllergies';
 import Preferences from './../components/preferences';
 import PersonalDetails from './../components/personalDetails';
 import { NextPage } from 'next';
@@ -101,7 +102,6 @@ const Account = () => {
                   className="w-full p-3 border rounded focus:outline-none focus:border-blue-500"
                 />
               </div>
-              {/* ... (other form fields) */}
               <button
                 type="button"
                 onClick={handleUpdateDetails}
@@ -127,6 +127,8 @@ const Account = () => {
             <h2 className="text-2xl font-semibold text-gray-800 mb-3">Preferences</h2>
             <form>
               <Preferences />
+              <PreferenceAllergies />
+
             </form>
           </div>
         )}

@@ -1,133 +1,149 @@
 import { FC, useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db, auth } from './../firebase';
+import { db, auth } from '../firebase';
 
-import { Snackbar } from '@mui/material';
+import { Snackbar, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+
+interface FormValues {
+  prefBreakfast: string;
+  prefLunch: string;
+  prefDinner: string;
+}
 
 const Preferences: FC = () => {
-  const { register } = useForm();
-  const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
-  const [temporaryPreferences, setTemporaryPreferences] = useState<string[]>([]);
-  const [showSelectedPreferences, setShowSelectedPreferences] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  const handlePreferenceChange = (preference: string) => {
-    setTemporaryPreferences((prevTemporaryPreferences) => {
-      if (prevTemporaryPreferences.includes(preference)) {
-        return prevTemporaryPreferences.filter((pref) => pref !== preference);
-      } else {
-        return [...prevTemporaryPreferences, preference];
-      }
+    const { register, handleSubmit } = useForm<FormValues>();
+    const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
+    const [temporaryPreferences, setTemporaryPreferences] = useState<FormValues>({
+      prefBreakfast: '',
+      prefLunch: '',
+      prefDinner: '',
     });
-  };
-
-  const handleChangePreferences = async () => {
-    try {
-      const uid = auth.currentUser?.uid;
-
-      if (uid) {
-        const userDocRef = doc(db, 'users', uid);
-
-        await updateDoc(userDocRef, {
-          preferences: temporaryPreferences,
-        });
-
-        setSelectedPreferences(temporaryPreferences);
-        setShowSelectedPreferences(true);
-
-        setError('User preferences updated.');
-        setSnackbarOpen(true);
-      }
-    } catch (error) {
-      setError('Error updating preferences:' + error.message);
-      setSnackbarOpen(true);
-    }
-  };
-
-  useEffect(() => {
-    const fetchUserPreferences = async () => {
+    const [showSelectedPreferences, setShowSelectedPreferences] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+  
+    const handleSnackbarClose = () => {
+      setSnackbarOpen(false);
+    };
+  
+    const handlePreferenceChange = (meal: string, value: string) => {
+      setTemporaryPreferences((prevTemporaryPreferences) => ({
+        ...prevTemporaryPreferences,
+        [meal]: value,
+      }));
+    };
+  
+    const handleChangePreferences: SubmitHandler<FormValues> = async (data) => {
       try {
         const uid = auth.currentUser?.uid;
-
+  
         if (uid) {
           const userDocRef = doc(db, 'users', uid);
-          const userDocSnapshot = await getDoc(userDocRef);
-
-          if (userDocSnapshot.exists()) {
-            const userData = userDocSnapshot.data();
-            const userPreferences = userData?.preferences || [];
-
-            setSelectedPreferences(userPreferences);
-            setTemporaryPreferences(userPreferences);
-            setShowSelectedPreferences(true);
-          }
+  
+          await updateDoc(userDocRef, {
+            prefBreakfast: data.prefBreakfast,
+            prefLunch: data.prefLunch,
+            prefDinner: data.prefDinner,
+          });
+  
+          setSelectedPreferences(Object.values(data));
+          setShowSelectedPreferences(true);
+  
+          setError('User preferences updated.');
+          setSnackbarOpen(true);
         }
       } catch (error) {
-        setError('Error fetching user preferences:' + error.message);
+        setError('Error updating preferences: ' + error.message);
         setSnackbarOpen(true);
-      } finally {
-        setLoading(false);
       }
     };
-
-    fetchUserPreferences();
-  }, []);
-
-  if (loading) {
-    return <p className='text-white'>Loading...</p>;
-  }
-
-  return (
-    <section className="mb-8">
-      {/* Food Preferences Section */}
-      <div className="bg-white p-6 rounded-md shadow-md">
-        <p className="mb-4 font-semibold text-gray-800">Please select your preferences/allergies:</p>
-        <div className="grid grid-cols-2 gap-4 text-gray-800">
-          {['Dairy Free', 'Gluten Free', 'Halal', 'Kosher', 'Nut Free', 'Shellfish Free', 'Vegetarian', 'Vegan'].map((preference) => (
-            <label key={preference} className="flex items-center">
-              <input
-                type="checkbox"
-                {...register(preference)}
-                className="mr-2 border-gray-400 focus:outline-none focus:border-blue-500"
-                onChange={() => handlePreferenceChange(preference)}
-                checked={temporaryPreferences.includes(preference)}
-              />
-              {preference}
-            </label>
-          ))}
+  
+    useEffect(() => {
+      const fetchUserPreferences = async () => {
+        try {
+          const uid = auth.currentUser?.uid;
+  
+          if (uid) {
+            const userDocRef = doc(db, 'users', uid);
+            const userDocSnapshot = await getDoc(userDocRef);
+  
+            if (userDocSnapshot.exists()) {
+              const userData = userDocSnapshot.data();
+              const { prefBreakfast, prefLunch, prefDinner } = userData || {};
+  
+              setTemporaryPreferences({
+                prefBreakfast: prefBreakfast || '',
+                prefLunch: prefLunch || '',
+                prefDinner: prefDinner || '',
+              });
+              setSelectedPreferences([prefBreakfast, prefLunch, prefDinner]);
+              setShowSelectedPreferences(true);
+            }
+          }
+        } catch (error) {
+          setError('Error fetching user preferences: ' + error.message);
+          setSnackbarOpen(true);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchUserPreferences();
+    }, []);
+  
+    if (loading) {
+      return <p className='text-white'>Loading...</p>;
+    }
+  
+    return (
+      <section className="mb-8">
+        {/* Food Preferences Section */}
+        <div className="bg-white p-8 rounded-md shadow-md"> {/* Increased padding */}
+          <p className="mb-4 font-semibold text-2xl text-gray-800">Please select the type of food you want to eat:</p> {/* Increased font size */}
+          <div className="mt-6 grid grid-cols-3 gap-4">
+            {['Breakfast', 'Lunch', 'Dinner'].map((meal, index) => (
+              <div key={index}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>{meal}</InputLabel>
+                  <Select
+                    {...register(`pref${meal}` as keyof FormValues)} // Explicitly specify the field name
+                    value={temporaryPreferences[`pref${meal}`]}
+                    onChange={(e) => handlePreferenceChange(`pref${meal}`, e.target.value as string)}
+                    defaultValue={"any"}
+                    label={meal}
+                  >
+                    <MenuItem value="any">❓ Any</MenuItem>
+                    <MenuItem value="rice">🍚 Rice</MenuItem>
+                    <MenuItem value="beef">🥩 Beef</MenuItem>
+                    <MenuItem value="chicken">🍗 Chicken</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            ))}
+          </div>
+  
+          <div className="mt-8">
+            <button
+              type="button"
+              onClick={handleSubmit(handleChangePreferences)}
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md transition duration-300 hover:bg-blue-600"
+            >
+              Change Preferences
+            </button>
+          </div>
         </div>
-        <div className="mt-6">
-          <button
-            type="button"
-            onClick={handleChangePreferences}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-md transition duration-300 hover:bg-blue-600"
-          >
-            Change Preferences
-          </button>
-        </div>
-        {showSelectedPreferences && (
-          <p className="mt-4 text-gray-800">
-            <b>Selected Preferences:</b><br /> {selectedPreferences.join(', ')}
-          </p>
-        )}
-      </div>
-      {/* Snackbar for displaying errors */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        message={error || ''}
-      />
-    </section>
-  );
-};
-
-export default Preferences;
+        {/* Snackbar for displaying errors */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          message={error || ''}
+        />
+      </section>
+    );
+  };
+  
+  export default Preferences;
