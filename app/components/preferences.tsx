@@ -108,17 +108,16 @@ const Preferences: FC = () => {
     <section className="mb-8">
       {/* Food Preferences Section */}
       <div className="bg-white p-8 rounded-md shadow-md">
-        {" "}
         <p className="mb-4 font-semibold text-gray-800">
           Please select the type of food you want to eat:
-        </p>{" "}
+        </p>
         <div className="mt-6 grid grid-cols-3 gap-4">
           {["Breakfast", "Lunch", "Dinner"].map((meal, index) => (
             <div key={index}>
               <FormControl fullWidth variant="outlined">
                 <InputLabel>{meal}</InputLabel>
                 <Select
-                  {...register(`pref${meal}` as keyof FormValues)} // Explicitly specify the field name
+                  {...register(`pref${meal}` as keyof FormValues)}
                   value={temporaryPreferences[`pref${meal}`]}
                   onChange={(e) =>
                     handlePreferenceChange(
@@ -130,19 +129,35 @@ const Preferences: FC = () => {
                   label={meal}
                 >
                   {meal === "Breakfast" ? (
-                    <>
-                      <MenuItem value="any">❓ Any</MenuItem>
-                      <MenuItem value="any">🥚 Eggs</MenuItem>
-                      <MenuItem value="any">🥛 Yogurt</MenuItem>
-                      <MenuItem value="any">🥣 Oats</MenuItem>
-                    </>
+                    [
+                      <MenuItem key="any" value="any">
+                        ❓ Any
+                      </MenuItem>,
+                      <MenuItem key="eggs" value="eggs">
+                        🥚 Eggs
+                      </MenuItem>,
+                      <MenuItem key="yogurt" value="yogurt">
+                        🥛 Yogurt
+                      </MenuItem>,
+                      <MenuItem key="oats" value="oats">
+                        🥣 Oats
+                      </MenuItem>,
+                    ]
                   ) : (
-                    <>
-                      <MenuItem value="any">❓ Any</MenuItem>
-                      <MenuItem value="rice">🍚 Rice</MenuItem>
-                      <MenuItem value="beef">🥩 Beef</MenuItem>
-                      <MenuItem value="chicken">🍗 Chicken</MenuItem>
-                    </>
+                    [
+                      <MenuItem key="any" value="any">
+                        ❓ Any
+                      </MenuItem>,
+                      <MenuItem key="rice" value="rice">
+                        🍚 Rice
+                      </MenuItem>,
+                      <MenuItem key="beef" value="beef">
+                        🥩 Beef
+                      </MenuItem>,
+                      <MenuItem key="chicken" value="chicken">
+                        🍗 Chicken
+                      </MenuItem>,
+                    ]
                   )}
                 </Select>
               </FormControl>

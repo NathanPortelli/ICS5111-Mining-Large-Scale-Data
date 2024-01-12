@@ -8,10 +8,6 @@ import Header from './../components/header';
 import Preferences from './../components/preferences';
 import PersonalDetails from './../components/personalDetails';
 import FoodMenu from './../components/foodMenu';
-import { NextPage } from 'next';
-
-import { auth, db } from './../firebase';
-import { doc, getDoc } from 'firebase/firestore';
 
 import withAuth from './../withAuth';
 
@@ -21,14 +17,6 @@ const Recommender = () => {
   const [showFoodMenu, setShowFoodMenu] = useState(false);
   const [recommendedKcal, setRecommendedKcal] = useState(0);
   const [goal, setGoal] = useState("");
-
-  const router = useRouter();
-  const isLoggedIn = auth.currentUser !== null; // Check if user is logged in
-  // If user is not logged in
-  if (!isLoggedIn) {
-    router.replace('/credentials');
-    return null; // Prevent rendering rest
-  }
 
   const onSubmit = () => {
     setShowFoodMenu(true);
@@ -133,6 +121,7 @@ const Recommender = () => {
             <p className="text-xl ml-1 text-white mb-5">Pick one meal from each menu.</p>
           </div>
         </div>  
+        <p className="text-xl ml-1 text-white mb-5">Options for: <b>{recommendedKcal} kcal</b></p>
         <div className="border-2 bg-gray-600 rounded-md shadow-md">
           <div className="p-5 justify-center">
             <FoodMenu />

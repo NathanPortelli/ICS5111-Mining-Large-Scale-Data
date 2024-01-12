@@ -1,15 +1,18 @@
 import React from 'react';
+import { FC } from 'react';
 
 interface FoodCardProps {
+  id: string;
   name: string;
   image: string;
   description: string;
   ingredients: string[];
+  selected: boolean;
 }
 
-const FoodCard: React.FC<FoodCardProps> = ({ name, image, description, ingredients }) => {
+const FoodCard: FC<FoodCardProps> = ({ id, name, image, description, ingredients, selected }) => {
   return (
-    <div className="bg-white p-4 rounded-md shadow-md">
+    <div className={`bg-white p-4 rounded-md shadow-md border-4 ${selected ? 'border-red-500' : 'border-transparent'} rounded-md p-4 mb-4`}>
       <img src={image} alt={name} className="mb-2 rounded-md" />
       <h3 className="text-lg font-semibold mb-2">{name}</h3>
       <p className="text-gray-700 mb-2">{description}</p>
@@ -18,9 +21,6 @@ const FoodCard: React.FC<FoodCardProps> = ({ name, image, description, ingredien
           <li key={index}>{ingredient}</li>
         ))}
       </ul>
-      {/* <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md transition duration-300 hover:bg-blue-600">
-        Pick Meal
-      </button> */}
     </div>
   );
 };

@@ -5,7 +5,11 @@ import { useEffect, useState } from 'react';
 import { auth, db } from './../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
+import { useRouter, usePathname } from 'next/navigation';
+
 const Header = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const uid = auth.currentUser?.uid;
   const [showDropdown, setShowDropdown] = useState(false);
   const [name, setName] = useState('');
@@ -29,7 +33,6 @@ const Header = () => {
     fetchUserData();
   }, [uid]);
 
-
   return (
     <header className="sticky top-0 z-50 w-full flex items-center justify-between p-4 bg-black text-white border-b border-white">
       <div className="flex items-center">
@@ -37,11 +40,11 @@ const Header = () => {
           Diet Recommender
         </h1>
         <nav className="flex space-x-4">
-          <Link href="/" className='pr-4'> Home </Link>
-          <Link href="/diet" className='pr-4'> Diet </Link>
-          <Link href="/" className='pr-4'> Food </Link>
-          <Link href="/history" className='pr-4'> History </Link>
-        </nav>
+          <Link href="/" className={`pr-4 ${pathname === '/' ? 'text-blue-400' : ''}`}> Home </Link>
+          <Link href="/diet" className={`pr-4 ${pathname === '/diet' ? 'text-blue-400' : ''}`}> Diet </Link>
+          <Link href="/" className={`pr-4 ${pathname === '/food' ? 'text-blue-400' : ''}`}> Food </Link>
+          <Link href="/history" className={`pr-4 ${pathname === '/history' ? 'text-blue-400' : ''}`}> History </Link>
+        </nav>  
       </div>
       <div className="relative">
         <div className="relative cursor-pointer" onClick={toggleDropdown}>

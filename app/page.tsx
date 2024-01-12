@@ -1,18 +1,20 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react'
+import { useEffect } from 'react'
 import Header from './components/header';
 import { auth } from './firebase';
 
 export default function Home() {
   const router = useRouter();
   const isLoggedIn = auth.currentUser !== null; // Check if user is logged in
-  // If user is not logged in
-  if (!isLoggedIn) {
-    router.replace('/credentials');
-    return null; // Prevent rendering rest
-  }
+
+  useEffect(() => {
+      // If user is not logged in
+    if (!isLoggedIn) {
+      router.replace('/credentials');
+    }
+  }, [isLoggedIn, router]);
 
   const handleButtonClick = () => {
     router.push('/diet');
