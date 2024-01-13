@@ -1,10 +1,18 @@
-import { NextResponse } from "next/server";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/app/firebase";
+import { NextApiRequest } from "next";
 
-export async function GET() {
-  const querySnapshot = await getDocs(collection(db, "food"));
-  return NextResponse.json({
-    result: querySnapshot.docs.map((doc) => doc.data()),
-  });
+export async function GET(request: NextApiRequest) {
+  try {
+    const url = new URL(request.url!);
+    const food = url.searchParams.get("food");
+    const res = await fetch(
+      process.env.MYFITNESSPAL_BASE_URL + `/nutrition?query=${food}&page=1`
+    );
+    const data = await res.json();
+
+    return Response.json(data);
+  } catch (err) {
+    return Response.json({
+      result: err,
+    });
+  }
 }
