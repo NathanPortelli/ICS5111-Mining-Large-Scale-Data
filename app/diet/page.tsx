@@ -9,23 +9,82 @@ import Preferences from './../components/preferences';
 import PersonalDetails from './../components/personalDetails';
 import FoodMenu from './../components/foodMenu';
 
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { auth, db } from './../firebase';
+
 import withAuth from './../withAuth';
 
 const Recommender = () => {
   const { register, handleSubmit } = useForm();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
-  const [recommendedKcal, setRecommendedKcal] = useState(0);
+  const [recommendedKcal, setRecommendedKcal] = useState(0); // Recommended kcal based on user details
+  const [customKcal, setCustomKcal] = useState(0); // Custom kcal based on user input
+  const [submitKcal, setSubmitKcal] = useState(0); // Kcal submitted to FoodMenu
   const [goal, setGoal] = useState("");
 
   const onSubmit = () => {
+    setSubmitKcal(customKcal)
     setShowFoodMenu(true);
   };
 
-  const openDropdown = (goal) => {
+  const fetchUserData = async () => {
+    const uid = auth.currentUser?.uid;
+    try {
+      if (uid) {
+        const userDocRef = doc(db, 'users', uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+
+        if (userDocSnapshot.exists()) {
+          const userData = userDocSnapshot.data();
+          return {
+            weight: userData?.weight || 0,
+            height: userData?.height || 0,
+            age: userData?.age || 0,
+            gender: userData?.gender || 'male',
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+    // Return default values if there's an error or no user data
+    return {
+      weight: 0,
+      height: 0,
+      age: 0,
+      gender: 'male',
+    };
+  };
+
+  const openDropdown = async (goal) => {
     setShowDropdown(true);
     setGoal(goal);
-    setRecommendedKcal(1500);
+    const userDetails = await fetchUserData();
+
+    // Calculate BMR -- Based on: https://mohap.gov.ae/en/more/awareness-center/calories-calculation
+    let bmr = 0;
+    if (userDetails.gender === 'male') {
+      bmr = 10 * userDetails.weight + 6.25 * userDetails.height - 5 * userDetails.age + 5;
+    } else {
+      bmr = 10 * userDetails.weight + 6.25 * userDetails.height - 5 * userDetails.age - 161;
+    }
+
+    switch (goal) {
+      case 'Weight Loss':
+        setRecommendedKcal(bmr - 500);
+        setCustomKcal(recommendedKcal);
+        break;
+      case 'Weight Gain':
+        setRecommendedKcal(bmr + 500);
+        setCustomKcal(recommendedKcal);
+        break;
+      case 'Maintain':
+      default:
+        setRecommendedKcal(bmr);
+        setCustomKcal(recommendedKcal);
+        break;
+    }
   };
 
   return (
@@ -96,8 +155,8 @@ const Recommender = () => {
                 <input
                   id="calories"
                   type="number"
-                  defaultValue={recommendedKcal}
-                  {...register('calories', { valueAsNumber: true })}
+                  value={customKcal}
+                  onChange={(e) => setCustomKcal(e.target.valueAsNumber)} 
                   className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
                 />
                 <button
@@ -121,7 +180,7 @@ const Recommender = () => {
             <p className="text-xl ml-1 text-white mb-5">Pick one meal from each menu.</p>
           </div>
         </div>  
-        <p className="text-xl ml-1 text-white mb-5">Options for: <b>{recommendedKcal} kcal</b></p>
+        <p className="text-xl ml-1 text-white mb-5">Options for: <b>{submitKcal} kcal</b></p>
         <div className="border-2 bg-gray-600 rounded-md shadow-md">
           <div className="p-5 justify-center">
             <FoodMenu />

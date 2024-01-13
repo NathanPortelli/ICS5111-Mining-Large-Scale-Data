@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, orderBy, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import { auth, db } from './../firebase';
 
 import { Snackbar } from '@mui/material';
@@ -30,7 +30,8 @@ const MealHistory = () => {
     if (userEmail) {
       const q = query(
         collection(db, 'mealHistory'),
-        where('email', '==', userEmail)
+        where('email', '==', userEmail),
+        orderBy('date', 'desc'), 
       );
 
       const fetchData = async () => {
@@ -61,7 +62,7 @@ const MealHistory = () => {
         <h1 className="text-4xl font-semibold text-white mb-6">Meal History</h1>
         {meals.map((meal, index) => (
           <div key={index}>
-            <div className="bg-white p-4 rounded-md shadow-md">
+            <div className="bg-white p-4 mb-4 rounded-md shadow-md">
               <h2 className="text-xl mb-3">
                 {meal.date.toDate().toLocaleDateString('en-US', {
                   day: '2-digit',
