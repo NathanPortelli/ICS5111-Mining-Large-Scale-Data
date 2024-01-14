@@ -40,12 +40,14 @@ export function extractTextToArray(paragraph: string): string[] {
 }
 
 export function splitSentencesIntoWords(sentences: string[]): string[][] {
-  return sentences.map((sentence) => sentence.split(/\s+/));
+  return sentences.map((sentence) => {
+    return sentence.replace(/[^\w\s]/g, "").split(/\s+/);
+  });
 }
 
 export function removeWordsFromSentence(
   sentence: string[],
   wordsToRemove: string[]
 ): string[] {
-  return sentence.filter((word) => !wordsToRemove.includes(word));
+  return sentence.filter((word) => !wordsToRemove.includes(word.toLowerCase()));
 }

@@ -5,6 +5,7 @@ import {
   extractTextToArray,
   fixSentenceSpacing,
   removeTags,
+  removeWordsFromSentence,
   splitSentencesIntoWords,
 } from "@/app/utils/textUtil";
 import { getAllData } from "@/app/utils/firebaseUtil";
@@ -2769,10 +2770,16 @@ export async function GET(request: NextApiRequest) {
 
     const stopWords = (await getAllData("stopwords")).map((word) => word.word);
     
-    console.log(stopWords);
-    console.log(instructionsToWords);
-    
 
+    let instructionsWithoutStopWords: string[][] = []
+
+    instructionsToWords.forEach((instruction) => {
+      instructionsWithoutStopWords.push(removeWordsFromSentence(instruction, stopWords));
+    });
+
+    console.log(instructionsWithoutStopWords);
+    
+    
     const extractedData = {
       id: data.id,
       title: data.title,
