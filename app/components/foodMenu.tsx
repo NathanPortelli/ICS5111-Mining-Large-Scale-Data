@@ -287,46 +287,46 @@ interface FoodMenuItem {
     id: string;
     name: string;
     image: string;
-    description: string;
+    calories: string;
     ingredients: string[];
 }
 
 // todo: Replace with server data
 const breakfastMenuItems: FoodMenuItem[] = [
-    { id: '1', name: 'Coco Pops', image: 'breakfast.jpg', description: 'Breakfast option', ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'] },
-    { id: '2', name: 'Waffles', image: 'breakfast.jpg', description: 'Breakfast option', ingredients: ['Ingredient 4', 'Ingredient 5', 'Ingredient 6'] },
-    { id: '3', name: 'Just Coffee', image: 'breakfast.jpg', description: 'Breakfast option', ingredients: ['Ingredient 7', 'Ingredient 8', 'Ingredient 9'] },
+    { id: '1', name: 'Coco Pops', image: 'breakfast.jpg', calories: 'Breakfast option', ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'] },
+    { id: '2', name: 'Waffles', image: 'breakfast.jpg', calories: 'Breakfast option', ingredients: ['Ingredient 4', 'Ingredient 5', 'Ingredient 6'] },
+    { id: '3', name: 'Just Coffee', image: 'breakfast.jpg', calories: 'Breakfast option', ingredients: ['Ingredient 7', 'Ingredient 8', 'Ingredient 9'] },
 ];
 
 const lunchMenuItems: FoodMenuItem[] = [
-    { id: '4', name: '16oz steak with fries', image: 'lunch.jpg', description: 'Lunch option', ingredients: ['Ingredient 10', 'Ingredient 11', 'Ingredient 12'] },
-    { id: '5', name: 'Krabby Patty', image: 'lunch.jpg', description: 'Lunch option', ingredients: ['Ingredient 13', 'Ingredient 14', 'Ingredient 15'] },
-    { id: '6', name: 'Salad', image: 'lunch.jpg', description: 'Lunch option', ingredients: ['Ingredient 16', 'Ingredient 17', 'Ingredient 18'] },
+    { id: '4', name: '16oz steak with fries', image: 'lunch.jpg', calories: 'Lunch option', ingredients: ['Ingredient 10', 'Ingredient 11', 'Ingredient 12'] },
+    { id: '5', name: 'Krabby Patty', image: 'lunch.jpg', calories: 'Lunch option', ingredients: ['Ingredient 13', 'Ingredient 14', 'Ingredient 15'] },
+    { id: '6', name: 'Salad', image: 'lunch.jpg', calories: 'Lunch option', ingredients: ['Ingredient 16', 'Ingredient 17', 'Ingredient 18'] },
 ];
 
 const dinnerMenuItems: FoodMenuItem[] = [
-    { id: '7', name: 'Cheese Grazed Burger', image: 'dinner.jpg', description: 'Dinner option', ingredients: ['Ingredient 19', 'Ingredient 20', 'Ingredient 21'] },
-    { id: '8', name: 'Cereal', image: 'dinner.jpg', description: 'Dinner option', ingredients: ['Ingredient 22', 'Ingredient 23', 'Ingredient 24'] },
-    { id: '9', name: 'Double Pizza', image: 'dinner.jpg', description: 'Dinner option', ingredients: ['Ingredient 25', 'Ingredient 26', 'Ingredient 27'] },
+    { id: '7', name: 'Cheese Grazed Burger', image: 'dinner.jpg', calories: 'Dinner option', ingredients: ['Ingredient 19', 'Ingredient 20', 'Ingredient 21'] },
+    { id: '8', name: 'Cereal', image: 'dinner.jpg', calories: 'Dinner option', ingredients: ['Ingredient 22', 'Ingredient 23', 'Ingredient 24'] },
+    { id: '9', name: 'Double Pizza', image: 'dinner.jpg', calories: 'Dinner option', ingredients: ['Ingredient 25', 'Ingredient 26', 'Ingredient 27'] },
 ];
 
 // todo: Replace with server data -- alternatives
 const altBreakfastMenuItems: FoodMenuItem[] = [
-  { id: '10', name: 'Pancakes with Syrup', image: 'breakfast.jpg', description: 'Breakfast option', ingredients: ['Flour', 'Milk', 'Eggs', 'Maple Syrup'] },
-  { id: '11', name: 'Avocado Toast', image: 'breakfast.jpg', description: 'Breakfast option', ingredients: ['Avocado', 'Whole Grain Bread', 'Salt', 'Pepper'] },
-  { id: '12', name: 'Blueberry Muffins', image: 'breakfast.jpg', description: 'Breakfast option', ingredients: ['Blueberries', 'Flour', 'Sugar', 'Butter'] },
+  { id: '10', name: 'Pancakes with Syrup', image: 'breakfast.jpg', calories: 'Breakfast option', ingredients: ['Flour', 'Milk', 'Eggs', 'Maple Syrup'] },
+  { id: '11', name: 'Avocado Toast', image: 'breakfast.jpg', calories: 'Breakfast option', ingredients: ['Avocado', 'Whole Grain Bread', 'Salt', 'Pepper'] },
+  { id: '12', name: 'Blueberry Muffins', image: 'breakfast.jpg', calories: 'Breakfast option', ingredients: ['Blueberries', 'Flour', 'Sugar', 'Butter'] },
 ];
 
 const altLunchMenuItems: FoodMenuItem[] = [
-  { id: '13', name: 'Grilled Chicken Salad', image: 'lunch.jpg', description: 'Lunch option', ingredients: ['Grilled Chicken', 'Mixed Greens', 'Tomatoes', 'Balsamic Dressing'] },
-  { id: '14', name: 'Vegetarian Wrap', image: 'lunch.jpg', description: 'Lunch option', ingredients: ['Hummus', 'Cucumbers', 'Tomatoes', 'Whole Wheat Wrap'] },
-  { id: '15', name: 'Quinoa Bowl', image: 'lunch.jpg', description: 'Lunch option', ingredients: ['Quinoa', 'Roasted Vegetables', 'Feta Cheese', 'Olive Oil'] },
+  { id: '13', name: 'Grilled Chicken Salad', image: 'lunch.jpg', calories: 'Lunch option', ingredients: ['Grilled Chicken', 'Mixed Greens', 'Tomatoes', 'Balsamic Dressing'] },
+  { id: '14', name: 'Vegetarian Wrap', image: 'lunch.jpg', calories: 'Lunch option', ingredients: ['Hummus', 'Cucumbers', 'Tomatoes', 'Whole Wheat Wrap'] },
+  { id: '15', name: 'Quinoa Bowl', image: 'lunch.jpg', calories: 'Lunch option', ingredients: ['Quinoa', 'Roasted Vegetables', 'Feta Cheese', 'Olive Oil'] },
 ];
 
 const altDinnerMenuItems: FoodMenuItem[] = [
-  { id: '16', name: 'Salmon with Lemon Dill Sauce', image: 'dinner.jpg', description: 'Dinner option', ingredients: ['Salmon', 'Lemon', 'Dill', 'Olive Oil'] },
-  { id: '17', name: 'Pasta Primavera', image: 'dinner.jpg', description: 'Dinner option', ingredients: ['Pasta', 'Assorted Vegetables', 'Parmesan Cheese', 'Tomato Sauce'] },
-  { id: '18', name: 'Teriyaki Tofu Stir-Fry', image: 'dinner.jpg', description: 'Dinner option', ingredients: ['Tofu', 'Broccoli', 'Carrots', 'Teriyaki Sauce'] },
+  { id: '16', name: 'Salmon with Lemon Dill Sauce', image: 'dinner.jpg', calories: 'Dinner option', ingredients: ['Salmon', 'Lemon', 'Dill', 'Olive Oil'] },
+  { id: '17', name: 'Pasta Primavera', image: 'dinner.jpg', calories: 'Dinner option', ingredients: ['Pasta', 'Assorted Vegetables', 'Parmesan Cheese', 'Tomato Sauce'] },
+  { id: '18', name: 'Teriyaki Tofu Stir-Fry', image: 'dinner.jpg', calories: 'Dinner option', ingredients: ['Tofu', 'Broccoli', 'Carrots', 'Teriyaki Sauce'] },
 ];
   
 export default FoodMenu;

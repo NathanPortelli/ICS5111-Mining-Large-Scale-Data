@@ -14,6 +14,9 @@ interface Meal {
   email: string;
   meal: string;
   period: string;
+  calories: number;
+  instructions: string;
+  ingredients: string[];
 }
 
 const MealHistory = () => {
@@ -70,11 +73,18 @@ const MealHistory = () => {
                   year: 'numeric',
                 })} | {meal.period.charAt(0).toUpperCase() + meal.period.slice(1)}
               </h2>
-              {/* //todo change with full meal details */}
-              {/* <img src={} alt={} className="mb-2 rounded-md" /> */}
+              <img
+                src={'image.jpg'}
+                alt={`Image for ${meal.meal}`}
+                className="mb-2 rounded-md"
+                style={{ maxHeight: '200px' }} 
+              />
               <h3 className="text-lg font-semibold mb-2">
                 {meal.meal}
               </h3>
+              <p className="text-gray-700 mb-2">Calories: {meal.calories}</p>
+              <p className="text-gray-700 mb-2">Instructions: {meal.instructions}</p>
+              <p className="text-gray-700 mb-2">Ingredients: {meal.ingredients}</p>
             </div>
           </div>
         ))}

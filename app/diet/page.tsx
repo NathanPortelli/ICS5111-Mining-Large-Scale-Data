@@ -15,7 +15,6 @@ import { auth, db } from './../firebase';
 import withAuth from './../withAuth';
 
 const Recommender = () => {
-  const { register, handleSubmit } = useForm();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
   const [recommendedKcal, setRecommendedKcal] = useState(0); // Recommended kcal based on user details
@@ -24,7 +23,8 @@ const Recommender = () => {
   const [goal, setGoal] = useState("");
 
   const onSubmit = () => {
-    setSubmitKcal(customKcal)
+    const randomVariation = Math.floor(Math.random() * 101) - 50; // Random number between -50 and 50 so that the menu items change every time
+    setSubmitKcal(customKcal + randomVariation)
     setShowFoodMenu(true);
   };
 
@@ -72,16 +72,16 @@ const Recommender = () => {
 
     switch (goal) {
       case 'Weight Loss':
-        setRecommendedKcal(bmr - 500);
+        setRecommendedKcal(Math.floor(bmr - 500));
         setCustomKcal(recommendedKcal);
         break;
       case 'Weight Gain':
-        setRecommendedKcal(bmr + 500);
+        setRecommendedKcal(Math.floor(bmr + 500));
         setCustomKcal(recommendedKcal);
         break;
       case 'Maintain':
       default:
-        setRecommendedKcal(bmr);
+        setRecommendedKcal(Math.floor(bmr));
         setCustomKcal(recommendedKcal);
         break;
     }

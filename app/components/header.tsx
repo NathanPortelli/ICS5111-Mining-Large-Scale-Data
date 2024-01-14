@@ -42,7 +42,6 @@ const Header = () => {
         <nav className="flex space-x-4">
           <Link href="/" className={`pr-4 ${pathname === '/' ? 'text-blue-400' : ''}`}> Home </Link>
           <Link href="/diet" className={`pr-4 ${pathname === '/diet' ? 'text-blue-400' : ''}`}> Diet </Link>
-          <Link href="/" className={`pr-4 ${pathname === '/food' ? 'text-blue-400' : ''}`}> Food </Link>
           <Link href="/history" className={`pr-4 ${pathname === '/history' ? 'text-blue-400' : ''}`}> History </Link>
         </nav>  
       </div>
