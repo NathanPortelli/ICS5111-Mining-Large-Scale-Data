@@ -15,14 +15,32 @@ export async function POST(request: Request) {
     return errorResponse({ message: "No total calories data provided" });
   }
 
-  const caloriesPerMeal = total_calories / numberOfMeals;
-
   try {
     let generatedMealPlan = {};
 
     for (const meal in meals) {
       const mealFood = meals[meal as keyof MealFoods];
 
+      let caloriesPerMeal = 0;
+
+      if (numberOfMeals === 3) {
+        switch (meal) {
+          case "breakfast":
+            caloriesPerMeal = total_calories * 0.2;
+            break;
+          case "lunch":
+            caloriesPerMeal = total_calories * 0.5;
+            break;
+          case "dinner": 
+            caloriesPerMeal = total_calories * 0.3;
+            break;
+          default:
+            caloriesPerMeal = total_calories * 0.1;
+            break;
+        }
+      } else {
+        caloriesPerMeal = total_calories / numberOfMeals;
+      }
       //TO REVERT BEFORE TESTING
 
       // const spoonacularResponse = await spoonacularBaseAPI(
@@ -85,21 +103,21 @@ export async function POST(request: Request) {
         totalResults: 161,
       };
 
-      const idsAndTitles = data.results.map((result) => ({
+      const mealData = data.results.map((result) => ({
         id: result.id,
         title: result.title,
         image: result.image,
-        calories: Math.floor(result.nutrition.nutrients[0].amount),
+        calories: Math.round(result.nutrition.nutrients[0].amount),
       }));
 
       generatedMealPlan = {
         ...generatedMealPlan,
-        [meal]: idsAndTitles,
+        [meal]: mealData,
       };
     }
 
     return okResponse(generatedMealPlan);
   } catch (error) {
-    return errorResponse({ message: error.message });
+    return errorResponse({ message: error });
   }
 }
