@@ -9,6 +9,7 @@ import {
   splitSentencesIntoWords,
 } from "@/app/utils/textUtil";
 import { getAllData } from "@/app/utils/firebaseUtil";
+import { Word2Vec } from "@/app/utils/word2vec";
 
 export async function GET(request: NextApiRequest) {
   const url = new URL(request.url!);
@@ -19,6 +20,8 @@ export async function GET(request: NextApiRequest) {
   }
 
   try {
+    //TO REVERT BEFORE TESTING
+    
     // const spoonacularResponse = await spoonacularBaseAPI(
     //   `/recipes/${mealId}/information?includeNutrition=true`
     // );
@@ -2769,17 +2772,41 @@ export async function GET(request: NextApiRequest) {
     const instructionsToWords = splitSentencesIntoWords(splitInstructions);
 
     const stopWords = (await getAllData("stopwords")).map((word) => word.word);
-    
 
-    let instructionsWithoutStopWords: string[][] = []
+    let instructionsWithoutStopWords: string[][] = [];
 
     instructionsToWords.forEach((instruction) => {
-      instructionsWithoutStopWords.push(removeWordsFromSentence(instruction, stopWords));
+      instructionsWithoutStopWords.push(
+        removeWordsFromSentence(instruction, stopWords)
+      );
     });
 
-    console.log(instructionsWithoutStopWords);
-    
-    
+    const foodfoundations = await getAllData("foundationfoods");
+
+    const word2vec = new Word2Vec();
+
+    foodfoundations.forEach((food) => {
+      word2vec.addWords([food.target, ...food.context]);
+    });
+
+    for (let epoch = 0; epoch < 100; epoch++) {
+      foodfoundations.forEach((food) => {
+        word2vec.train(food.target, food.context);
+      });
+    }
+
+    const foundIngredients: string[] = [];
+
+    instructionsWithoutStopWords.forEach((instruction) => {
+      instruction.forEach((word) => {
+        if (word2vec.hasWord(word)) {
+          foundIngredients.push(word);
+        }
+      });
+    });
+
+    const uniqueIngredients = [...new Set(foundIngredients)];    
+
     const extractedData = {
       id: data.id,
       title: data.title,
@@ -2788,6 +2815,7 @@ export async function GET(request: NextApiRequest) {
         full: cleanedInstructions,
         split: splitInstructions,
       },
+      ingredients: uniqueIngredients,
       calories: extractedCalories ? Math.round(extractedCalories) : null,
     };
 
