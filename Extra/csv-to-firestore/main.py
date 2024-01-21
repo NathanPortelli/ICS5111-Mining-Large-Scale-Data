@@ -10,7 +10,7 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-def main(csv_path, collection_name):
+def stopwords(csv_path, collection_name):
     stopwords_df = pd.read_csv(csv_path, header=None, names=['stopword'], encoding='latin1')
 
     stopwords_list = stopwords_df['stopword'].tolist()
@@ -18,9 +18,25 @@ def main(csv_path, collection_name):
     for stopword in stopwords_list:
         db.collection(collection_name).add({'word': stopword})
 
+def foundation_foods(csv_path, collection_name):
+    df = pd.read_csv(csv_file_path)
+
+    grouped = df.groupby('food_category_id')['description'].agg(lambda x: x.str.lower().tolist())
+
+    foods_list = [{'target': df.loc[df['food_category_id'] == cat, 'food_category_name'].iloc[0], 'context': descriptions}
+          for cat, descriptions in grouped.items()]
+
+    for food in foods_list:
+        db.collection(collection_name).add(food)
+
 
 if __name__ == "__main__":
-    csv_file_path = 'data/stopwords.csv'
-    firestore_collection = 'stopwords'
+    # csv_file_path = 'data/stopwords.csv'
+    # firestore_collection = 'stopwords'
 
-    main(csv_file_path, firestore_collection)
+    # stopwords(csv_file_path, firestore_collection)
+
+    csv_file_path = 'data/foundationfoods.csv'
+    firestore_collection = 'foundationfoods'
+
+    foundation_foods(csv_file_path, firestore_collection)
