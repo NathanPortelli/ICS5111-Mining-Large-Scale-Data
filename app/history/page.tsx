@@ -8,6 +8,7 @@ import { Snackbar } from '@mui/material';
 
 import Header from './../components/header';
 import withAuth from './../withAuth';
+import Image from 'next/image';
 
 interface Meal {
   date: Timestamp;
@@ -73,7 +74,7 @@ const MealHistory = () => {
                   year: 'numeric',
                 })} | {meal.period.charAt(0).toUpperCase() + meal.period.slice(1)}
               </h2>
-              <img
+              <Image
                 src={'image.jpg'}
                 alt={`Image for ${meal.meal}`}
                 className="mb-2 rounded-md"

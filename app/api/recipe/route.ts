@@ -1,4 +1,3 @@
-import { NextApiRequest } from "next";
 import { errorResponse, okResponse } from "@/app/utils/responses";
 import { spoonacularBaseAPI } from "@/app/utils/baseSpoonacular";
 import {
@@ -10,8 +9,9 @@ import {
 } from "@/app/utils/textUtil";
 import { getAllData } from "@/app/utils/firebaseUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
+import { NextRequest } from "next/server";
 
-export async function GET(request: NextApiRequest) {
+export async function GET(request: NextRequest) {
   const url = new URL(request.url!);
   const mealId = url.searchParams.get("mealId");
 
@@ -20,7 +20,7 @@ export async function GET(request: NextApiRequest) {
   }
 
   try {
-    //TO REVERT BEFORE TESTING
+    //TO REVERT BEFORE TESTING TO INTE
     
     // const spoonacularResponse = await spoonacularBaseAPI(
     //   `/recipes/${mealId}/information?includeNutrition=true`
