@@ -29,7 +29,7 @@ const Credentials = () => {
         await signInWithEmailAndPassword(auth, email, password);
         setError('Sign in successful!');
         setSnackbarOpen(true);
-        router.push('/'); 
+        router.push('/diet'); 
         } catch (error) {
         setError(error.message);
         setSnackbarOpen(true);

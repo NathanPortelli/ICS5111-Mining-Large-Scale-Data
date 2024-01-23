@@ -20,6 +20,26 @@ interface Meal {
   ingredients: string[];
 }
 
+const groupMealsByDate = (meals: Meal[]) => {
+  const groupedMeals: { [date: string]: Meal[] } = {};
+
+  meals.forEach((meal) => {
+    const dateString = meal.date.toDate().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+
+    if (!groupedMeals[dateString]) {
+      groupedMeals[dateString] = [];
+    }
+
+    groupedMeals[dateString].push(meal);
+  });
+
+  return groupedMeals;
+};
+
 const MealHistory = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +55,7 @@ const MealHistory = () => {
       const q = query(
         collection(db, 'mealHistory'),
         where('email', '==', userEmail),
-        orderBy('date', 'desc'), 
+        orderBy('date', 'desc'),
       );
 
       const fetchData = async () => {
@@ -59,36 +79,42 @@ const MealHistory = () => {
     }
   }, []);
 
+  const groupedMeals = groupMealsByDate(meals);
+
   return (
     <main className="flex min-h-screen flex-col bg-gray-800">
       <Header />
       <section className="mt-8 ml-9 mr-9">
         <h1 className="text-4xl font-semibold text-white mb-6">Meal History</h1>
-        {meals.map((meal, index) => (
-          <div key={index}>
-            <div className="bg-white p-4 mb-4 rounded-md shadow-md">
-              <h2 className="text-xl mb-3">
-                {meal.date.toDate().toLocaleDateString('en-US', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })} | {meal.period.charAt(0).toUpperCase() + meal.period.slice(1)}
-              </h2>
-              <Image
-                src={'image.jpg'}
-                alt={`Image for ${meal.meal}`}
-                className="mb-2 rounded-md"
-                style={{ maxHeight: '200px' }} 
-              />
-              <h3 className="text-lg font-semibold mb-2">
-                {meal.meal}
-              </h3>
-              <p className="text-gray-700 mb-2">Calories: {meal.calories}</p>
-              <p className="text-gray-700 mb-2">Instructions: {meal.instructions}</p>
-              <p className="text-gray-700 mb-2">Ingredients: {meal.ingredients}</p>
+        <div className="flex flex-wrap">
+          {meals.map((meal, index) => (
+            <div key={index} className="w-full md:w-1/2 lg:w-1/3 p-4">
+              <div className="bg-white p-4 mb-4 rounded-md shadow-md">
+                <h2 className="text-xl mb-3">
+                  {meal.date.toDate().toLocaleDateString('en-US', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })} | {meal.period.charAt(0).toUpperCase() + meal.period.slice(1)}
+                </h2>
+                <Image
+                  width={200}
+                  height={300}
+                  src={''} 
+                  alt={`Image for ${meal.meal}`}
+                  className="mb-2 rounded-md"
+                  style={{ maxHeight: '200px' }} 
+                />
+                <h3 className="text-lg font-semibold mb-2">
+                  {meal.meal}
+                </h3>
+                <p className="text-gray-700 mb-2">Calories: {meal.calories}</p>
+                <p className="text-gray-700 mb-2">Instructions: {meal.instructions}</p>
+                <p className="text-gray-700 mb-2">Ingredients: {meal.ingredients}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
       {/* Snackbar for displaying errors */}
       <Snackbar

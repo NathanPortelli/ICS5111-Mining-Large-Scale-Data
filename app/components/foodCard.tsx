@@ -15,7 +15,7 @@ interface FoodCardProps {
 const FoodCard: FC<FoodCardProps> = ({ id, name, image, calories, selected }) => {
   return (
     <div className={`bg-white p-4 rounded-md shadow-md border-4 ${selected ? 'border-red-500' : 'border-transparent'} rounded-md p-4 mb-4`}>
-      <Image src={image} alt={name} className="mb-2 rounded-md" />
+      <Image src={image} alt={name} className="mb-2 rounded-md" width={200} height={300}/>
       <h3 className="text-lg font-semibold mb-2">{name}</h3>
       <p className="text-gray-700 mb-2">Calories: {calories}</p>
       {/* <ul className="list-disc ml-4">

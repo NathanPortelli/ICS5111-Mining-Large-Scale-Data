@@ -18,6 +18,15 @@ const Header = () => {
     setShowDropdown((prev) => !prev);
   };
 
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      router.push('/credentials'); // Redirect to the credentials page after logout
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (uid) {
@@ -37,7 +46,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full flex items-center justify-between p-4 bg-black text-white border-b border-white">
       <div className="flex items-center">
         <h1 className="text-xl font-semibold mr-6 border-r border-white pr-4" style={{ userSelect: 'none' }}>
-          Diet Recommender
+          Diet<span className="hidden md:inline"> Recommender</span>
         </h1>
         <nav className="flex space-x-4">
           <Link href="/" className={`pr-4 ${pathname === '/' ? 'text-blue-400' : ''}`}> Home </Link>
@@ -45,27 +54,41 @@ const Header = () => {
           <Link href="/history" className={`pr-4 ${pathname === '/history' ? 'text-blue-400' : ''}`}> History </Link>
         </nav>  
       </div>
-      <div className="relative">
-        <div className="relative cursor-pointer" onClick={toggleDropdown}>
+      <div className="relative flex-shrink-0">
+        <div className="cursor-pointer" onClick={toggleDropdown}>
           <div className="flex items-center space-x-2 cursor-pointer">
-            <p className='font-semibold mr-2'>{name}</p>
+            <p className={`font-semibold mr-2 ${name ? 'hidden md:flex' : ''}`}>{name}</p>
             <FaUser className="text-2xl" />
           </div>
         </div>
         {showDropdown && (
           <div className="absolute top-10 right-0 bg-white text-black rounded shadow-md p-2">
-            <Link href="/account">
-              <div className="flex items-center space-x-2 cursor-pointer">
-                <FaCog />
-                <span>Account</span>
-              </div>
-            </Link>
-            <Link href="/credentials">
-              <div className="flex items-center space-x-2 cursor-pointer">
-                <FaSignOutAlt />
-                <span>Log Out</span>
-              </div>
-            </Link>
+            {uid ? (
+              <>
+                <Link href="/account">
+                  <div className="flex items-center space-x-2 cursor-pointer">
+                    <FaCog />
+                    <span>Account</span>
+                  </div>
+                </Link>
+                <Link href="/credentials">
+                  <div
+                    className="flex items-center space-x-2 cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    <FaSignOutAlt />
+                    <span>Log Out</span>
+                  </div>
+                </Link>
+              </>
+            ) : (
+              <Link href="/credentials">
+                <div className="flex items-center space-x-2 cursor-pointer">
+                  <FaSignOutAlt />
+                  <span>Login</span>
+                </div>
+              </Link>
+            )}
           </div>
         )}
       </div>

@@ -58,10 +58,10 @@ const Account = () => {
   return (
     <main className="flex min-h-screen flex-col items-center bg-gray-800">
       <Header />
-      <section className="mt-8 sticky top-0 z-50">
+      <section className="mt-8 sticky top-0">
         <div className="flex">
           <button
-            className={`pl-6 pr-6 pt-3 pb-2 text-center font-semibold rounded-tl-lg ${
+            className={`flex-1 px-6 pt-3 pb-2 text-center font-semibold rounded-tl-lg ${
               currentTab === 'account' ? 'bg-blue-500 text-white' : 'bg-gray-300'
             }`}
             onClick={() => setCurrentTab('account')}
@@ -69,7 +69,7 @@ const Account = () => {
             Account Details
           </button>
           <button
-            className={`pl-6 pr-6 pt-3 pb-2 text-center font-semibold ${
+            className={`flex-1 px-6 pt-3 pb-2 text-center font-semibold ${
               currentTab === 'personal' ? 'bg-blue-500 text-white' : 'bg-gray-300'
             }`}
             onClick={() => setCurrentTab('personal')}
@@ -77,7 +77,7 @@ const Account = () => {
             Personal Details
           </button>
           <button
-            className={`pl-6 pr-6 pt-3 pb-2 text-center font-semibold rounded-tr-lg ${
+            className={`flex-1 px-6 pt-3 pb-2 text-center font-semibold rounded-tr-lg ${
               currentTab === 'preferences' ? 'bg-blue-500 text-white' : 'bg-gray-300'
             }`}
             onClick={() => setCurrentTab('preferences')}

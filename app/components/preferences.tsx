@@ -111,7 +111,7 @@ const Preferences: FC = () => {
         <p className="mb-4 font-semibold text-gray-800">
           Please select the type of food you want to eat:
         </p>
-        <div className="mt-6 grid grid-cols-3 gap-4">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           {["Breakfast", "Lunch", "Dinner"].map((meal, index) => (
             <div key={index}>
               <FormControl fullWidth variant="outlined">

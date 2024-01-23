@@ -1,8 +1,7 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation';
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 
 import Header from './../components/header';
 import Preferences from './../components/preferences';
@@ -15,6 +14,7 @@ import { auth, db } from './../firebase';
 import withAuth from './../withAuth';
 
 const Recommender = () => {
+  const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showFoodMenu, setShowFoodMenu] = useState(false);
   const [recommendedKcal, setRecommendedKcal] = useState(0); // Recommended kcal based on user details
@@ -24,7 +24,8 @@ const Recommender = () => {
 
   const onSubmit = () => {
     const randomVariation = Math.floor(Math.random() * 101) - 50; // Random number between -50 and 50 so that the menu items change every time
-    setSubmitKcal(customKcal + randomVariation)
+    const newSubmitKcal = customKcal + randomVariation;
+    setSubmitKcal(Math.max(newSubmitKcal, 0)); // Ensure that newSubmitKcal is not negative
     setShowFoodMenu(true);
   };
 
@@ -61,7 +62,7 @@ const Recommender = () => {
     setShowDropdown(true);
     setGoal(goal);
     const userDetails = await fetchUserData();
-
+  
     // Calculate BMR -- Based on: https://mohap.gov.ae/en/more/awareness-center/calories-calculation
     let bmr = 0;
     if (userDetails.gender === 'male') {
@@ -69,20 +70,20 @@ const Recommender = () => {
     } else {
       bmr = 10 * userDetails.weight + 6.25 * userDetails.height - 5 * userDetails.age - 161;
     }
-
+  
     switch (goal) {
       case 'Weight Loss':
         setRecommendedKcal(Math.floor(bmr - 500));
-        setCustomKcal(recommendedKcal);
+        setCustomKcal((prevCustomKcal) => Math.floor(bmr - 500));
         break;
       case 'Weight Gain':
         setRecommendedKcal(Math.floor(bmr + 500));
-        setCustomKcal(recommendedKcal);
+        setCustomKcal((prevCustomKcal) => Math.floor(bmr + 500));
         break;
       case 'Maintain':
       default:
         setRecommendedKcal(Math.floor(bmr));
-        setCustomKcal(recommendedKcal);
+        setCustomKcal((prevCustomKcal) => Math.floor(bmr));
         break;
     }
   };
@@ -90,12 +91,12 @@ const Recommender = () => {
   return (
     <main className="flex min-h-screen flex-col bg-gray-800">
       <Header />
-      <h1 className="mt-8 text-6xl font-semibold text-white mb-6 text-center">Personalised Diet Recommender</h1>
+      <h1 className="mt-8 text-4xl sm:text-6xl font-semibold text-white mb-6 text-center">Personalised Diet Recommender</h1>
       <div className='items-center justify-center ml-9 mr-9 mb-9'>
       <div className="flex items-center mb-4">
         <div className="w-20 h-20 mb-7 mr-3 flex items-center justify-center text-white font-semibold text-3xl bg-blue-500 rounded-full">1</div>
         <div className="flex flex-col">
-          <h1 className="mb-1 text-4xl font-semibold text-white">Your Details</h1>
+          <h1 className="mb-1 text-3xl sm:text-4xl font-semibold text-white">Your Details</h1>
           <p className="text-xl ml-1 text-white mb-5">Please ensure that the following information is accurate.</p>
         </div>
       </div>
@@ -125,7 +126,7 @@ const Recommender = () => {
         <div className="mt-8 flex items-center mb-3">
           <div className="w-20 h-20 mb-7 mr-3 flex items-center justify-center text-white font-semibold text-3xl bg-blue-500 rounded-full">2</div>
           <div className="flex flex-col">
-            <h1 className="mb-1 text-4xl font-semibold text-white">Goals</h1>
+            <h1 className="mb-1 text-3xl sm:text-4xl font-semibold text-white">Goals</h1>
             <p className="text-xl ml-1 text-white mb-5">Choose your diet plan.</p>
           </div>
         </div>  
@@ -176,7 +177,7 @@ const Recommender = () => {
         <div className="flex items-center mb-4">
           <div className="w-20 h-20 mb-7 mr-3 flex items-center justify-center text-white font-semibold text-3xl bg-blue-500 rounded-full">3</div>
           <div className="flex flex-col">
-            <h1 className="mb-1 text-4xl font-semibold text-white">Food Recommendations</h1>
+            <h1 className="mb-1 text-3xl sm:text-4xl font-semibold text-white">Food Recommendations</h1>
             <p className="text-xl ml-1 text-white mb-5">Pick one meal from each menu.</p>
           </div>
         </div>  

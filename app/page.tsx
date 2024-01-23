@@ -9,12 +9,12 @@ export default function Home() {
   const router = useRouter();
   const isLoggedIn = auth.currentUser !== null; // Check if user is logged in
 
-  useEffect(() => {
-      // If user is not logged in
-    if (!isLoggedIn) {
-      router.replace('/credentials');
-    }
-  }, [isLoggedIn, router]);
+  // useEffect(() => {
+  //     // If user is not logged in
+  //   if (!isLoggedIn) {
+  //     router.replace('/credentials');
+  //   }
+  // }, [isLoggedIn, router]);
 
   const handleButtonClick = () => {
     router.push('/diet');
@@ -23,8 +23,9 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
       <Header />
-      <h1 className="mt-8 text-6xl mb-6 font-semibold text-center text-white">Personalised Diet Recommender</h1>
-      <p className="mt-8 mb-8 text-2xl font-semibold ml-9 mr-9 text-white">Welcome to our intelligent diet recommendation web application! Powered by a custom k-NN classification model, this application offers you personalised dietary suggestions based on your BMI, preferences, and similar users’ preferences.</p>
+      <h1 className="mt-8 text-4xl sm:text-6xl mb-6 font-semibold text-center text-white">Personalised Diet Recommender</h1>
+      <p className="mt-4 mb-2 text-xl ml-9 mr-9 text-white">Todo: Change the below text to a more fitting introduction</p>
+      <p className="mt-4 mb-8 text-2xl font-semibold ml-9 mr-9 text-white">Welcome to our intelligent diet recommendation web application! Powered by academic panic, this application offers you personalised dietary suggestions based on your BMI, preferences, and similar users’ preferences, time permitting.</p>
 
       <div className="mb-8 ml-9 mr-9 pl-3 pr-3 p-2 border-2 bg-gray-600 rounded-md shadow-md">
         <p className="text-2xl mb-2 font-semibold text-white">Project Details:</p>
