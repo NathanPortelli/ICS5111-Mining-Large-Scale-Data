@@ -5,14 +5,19 @@ import Modal from 'react-modal'
 import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
+import WordContent  from './../utils/wordContext'
+
 interface MenuSectionProps {
   title: string;
   mealType: string;
   items: FoodMenuItem[];
   altItems?: FoodMenuItem[];
   selected: string | null;
+  alternate: string | null;
   isAlternative: boolean;
   handleSelect: (mealType: string, itemId: string) => void;
+  handleAlternate: (mealType: string, itemId: string) => void;
+  selectedFoodName: (mealType: string) => string;
   handleFindAlternatives: (mealType: string) => void;
   setSelectedMealTypeForAlternatives: (mealType: string | null) => void;
 }
@@ -23,8 +28,11 @@ const MenuSection: FC<MenuSectionProps> = ({
   items,
   altItems,
   selected,
+  alternate,
   isAlternative,
   handleSelect,
+  handleAlternate,
+  selectedFoodName,
   handleFindAlternatives,
   setSelectedMealTypeForAlternatives,
 }) => {
@@ -41,7 +49,7 @@ const MenuSection: FC<MenuSectionProps> = ({
       backgroundColorClass = 'bg-purple-200';
       break;
     default:
-      backgroundColorClass = 'bg-gray-200'; // Default color if meal type is not recognized
+      backgroundColorClass = 'bg-gray-200';
   }
   const menuClass = `mt-8 ${backgroundColorClass} p-6 rounded-md shadow-md`;
 
@@ -50,13 +58,10 @@ const MenuSection: FC<MenuSectionProps> = ({
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">{title} Menu</h2>
       </div>
-      {isAlternative && (
-        <h3 className="text-xl font-semibold mb-2 text-blue-500">Alternative Menu Options:</h3>
-      )}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {(isAlternative ? altItems : items)?.map((item) => (
+        {(items)?.map((item) => (
           <div key={item.id}>
-            <FoodCard key={item.id} {...item} selected={selected === item.id} />
+            <FoodCard key={item.id} {...item} selected={selected === item.id} alternate={alternate === item.id}/>
             <button
               className={`w-full bg-blue-500 text-white px-4 py-2 mb-2 rounded-md transition duration-300 hover:opacity-70 ${
                 selected === item.id ? 'bg-red-500' : ''
@@ -66,20 +71,54 @@ const MenuSection: FC<MenuSectionProps> = ({
               {selected === item.id ? `Unpick ${title}` : `Pick ${title}`}
             </button>
             <button
+              className={`w-full text-blue-500 px-4 py-2 font-semibold ${
+                alternate === item.id ? 'bg-green-700 text-white' : 'bg-white text-blue-500'
+              } rounded-md transition duration-300 hover:opacity-70 mb-2`}
+              onClick={() => {
+                handleAlternate(mealType, item.id)
+                setSelectedMealTypeForAlternatives(mealType)
+              }}
+            >
+              {alternate === item.id ? 'Hide Alternatives' : 'Find Alternatives'}
+            </button>
+            {/* <button
               type="button"
               className={`w-full text-blue-500 px-4 py-2 font-semibold bg-white border-4 border-blue-500 rounded-md transition duration-300 hover:opacity-70 mb-3`}
-              onClick={() =>
-                isAlternative ? setSelectedMealTypeForAlternatives(null) : handleFindAlternatives(mealType)
-              }
+              // onClick={() =>
+              //   isAlternative ? setSelectedMealTypeForAlternatives(null) : handleFindAlternatives(mealType)
+              // }
             >
               {isAlternative ? 'Return to Original' : `Find Alternatives`}
-            </button>
+            </button> */}
+            
           </div>
         ))}
       </div>
+      {alternate && ( 
+        <div className='bg-green-100 mt-5 p-5 rounded-md py-2'>
+          <h3 className="text-xl font-semibold mt-3 mb-2 text-green-700">Alternative Menu Options for {selectedFoodName(mealType)}:</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(altItems)?.map((altItems) => (
+              <div key={altItems.id}>
+                <FoodCard key={altItems.id} {...altItems} selected={selected === altItems.id} alternate={alternate === altItems.id}/>
+                <button
+                  className={`w-full bg-blue-500 text-white px-4 py-2 mb-2 rounded-md transition duration-300 hover:opacity-70 ${
+                    selected === altItems.id ? 'bg-red-500' : ''
+                  }`}
+                  onClick={() => handleSelect(mealType, altItems.id)}
+                >
+                  {selected === altItems.id ? `Unpick ${title}` : `Pick ${title}`}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 };
+
 interface FoodMenuItem {
   id: string;
   name: string;
@@ -102,6 +141,10 @@ const FoodMenu: FC = () => {
   const [selectedBreakfast, setSelectedBreakfast] = useState<string | null>(null);
   const [selectedLunch, setSelectedLunch] = useState<string | null>(null);
   const [selectedDinner, setSelectedDinner] = useState<string | null>(null);
+
+  const [alternateBreakfast, setAlternateBreakfast] = useState<string | null>(null);
+  const [alternateLunch, setAlternateLunch] = useState<string | null>(null);
+  const [alternateDinner, setAlternateDinner] = useState<string | null>(null);
   const [selectedMealTypeForAlternatives, setSelectedMealTypeForAlternatives] = useState<string | null>(null);
   const [allMenusSelected, setAllMenusSelected] = useState(false); //track overall selection
   const [modalIsOpen, setModalIsOpen] = useState(false); //track modal state
@@ -120,6 +163,22 @@ const FoodMenu: FC = () => {
         break;
       case 'dinner':
         setSelectedDinner((prev) => (prev === itemId ? null : itemId));
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAlternate = (mealType: string, itemId: string) => {
+    switch (mealType) {
+      case 'breakfast':
+        setAlternateBreakfast((prev) => (prev === itemId ? null : itemId));
+        break;
+      case 'lunch':
+        setAlternateLunch((prev) => (prev === itemId ? null : itemId));
+        break;
+      case 'dinner':
+        setAlternateDinner((prev) => (prev === itemId ? null : itemId));
         break;
       default:
         break;
@@ -179,10 +238,20 @@ const FoodMenu: FC = () => {
         items={breakfastMenuItems}
         altItems={altBreakfastMenuItems}
         selected={selectedBreakfast}
+        alternate={alternateBreakfast}
         isAlternative={selectedMealTypeForAlternatives === 'breakfast'}
         handleSelect={handleSelect}
+        handleAlternate={handleAlternate}
         handleFindAlternatives={handleFindAlternatives}
         setSelectedMealTypeForAlternatives={setSelectedMealTypeForAlternatives}
+        selectedFoodName={(mealType) => {
+          switch (mealType) {
+            case 'breakfast':
+              return alternateBreakfast ? breakfastMenuItems.find((altItem) => altItem.id === alternateBreakfast)?.name || '' : '';
+            default:
+              return '';
+          }
+        }}
       />
 
       <MenuSection
@@ -191,10 +260,20 @@ const FoodMenu: FC = () => {
         items={lunchMenuItems}
         altItems={altLunchMenuItems}
         selected={selectedLunch}
+        alternate={alternateLunch}
         isAlternative={selectedMealTypeForAlternatives === 'lunch'}
         handleSelect={handleSelect}
+        handleAlternate={handleAlternate}
         handleFindAlternatives={handleFindAlternatives}
         setSelectedMealTypeForAlternatives={setSelectedMealTypeForAlternatives}
+        selectedFoodName={(mealType) => {
+          switch (mealType) {
+            case 'lunch':
+              return alternateLunch ? lunchMenuItems.find((altItem) => altItem.id === alternateLunch)?.name || '' : '';
+            default:
+              return '';
+          }
+        }}
       />
 
       <MenuSection
@@ -203,10 +282,20 @@ const FoodMenu: FC = () => {
         items={dinnerMenuItems}
         altItems={altDinnerMenuItems}
         selected={selectedDinner}
+        alternate={alternateDinner}
         isAlternative={selectedMealTypeForAlternatives === 'dinner'}
         handleSelect={handleSelect}
+        handleAlternate={handleAlternate}
         handleFindAlternatives={handleFindAlternatives}
         setSelectedMealTypeForAlternatives={setSelectedMealTypeForAlternatives}
+        selectedFoodName={(mealType) => {
+          switch (mealType) {
+            case 'dinner':
+              return alternateDinner ? dinnerMenuItems.find((altItem) => altItem.id === alternateDinner)?.name || '' : '';
+            default:
+              return '';
+          }
+        }}
       />
 
       {/* Show if all 3 options selected */}
@@ -248,40 +337,40 @@ const FoodMenu: FC = () => {
 
 // todo: Replace with server data
 const breakfastMenuItems: FoodMenuItem[] = [
-    { id: '1', name: 'Coco Pops', image: '', calories: 'Breakfast option', ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'] },
-    { id: '2', name: 'Waffles', image: '', calories: 'Breakfast option', ingredients: ['Ingredient 4', 'Ingredient 5', 'Ingredient 6'] },
-    { id: '3', name: 'Just Coffee', image: '', calories: 'Breakfast option', ingredients: ['Ingredient 7', 'Ingredient 8', 'Ingredient 9'] },
+  { id: '1', name: 'Coco Pops', image: '', calories: '400', ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'] },
+  { id: '2', name: 'Waffles', image: '', calories: '400', ingredients: ['Ingredient 4', 'Ingredient 5', 'Ingredient 6'] },
+  { id: '3', name: 'Just Coffee', image: '', calories: '400', ingredients: ['Ingredient 7', 'Ingredient 8', 'Ingredient 9'] },
 ];
 
 const lunchMenuItems: FoodMenuItem[] = [
-    { id: '4', name: '16oz steak with fries', image: '', calories: 'Lunch option', ingredients: ['Ingredient 10', 'Ingredient 11', 'Ingredient 12'] },
-    { id: '5', name: 'Krabby Patty', image: '', calories: 'Lunch option', ingredients: ['Ingredient 13', 'Ingredient 14', 'Ingredient 15'] },
-    { id: '6', name: 'Salad', image: '', calories: 'Lunch option', ingredients: ['Ingredient 16', 'Ingredient 17', 'Ingredient 18'] },
+  { id: '4', name: '16oz steak with fries', image: '', calories: '500', ingredients: ['Ingredient 10', 'Ingredient 11', 'Ingredient 12'] },
+  { id: '5', name: 'Krabby Patty', image: '', calories: '500', ingredients: ['Ingredient 13', 'Ingredient 14', 'Ingredient 15'] },
+  { id: '6', name: 'Salad', image: '', calories: '500', ingredients: ['Ingredient 16', 'Ingredient 17', 'Ingredient 18'] },
 ];
 
 const dinnerMenuItems: FoodMenuItem[] = [
-    { id: '7', name: 'Cheese Grazed Burger', image: '', calories: 'Dinner option', ingredients: ['Ingredient 19', 'Ingredient 20', 'Ingredient 21'] },
-    { id: '8', name: 'Cereal', image: '', calories: 'Dinner option', ingredients: ['Ingredient 22', 'Ingredient 23', 'Ingredient 24'] },
-    { id: '9', name: 'Double Pizza', image: '', calories: 'Dinner option', ingredients: ['Ingredient 25', 'Ingredient 26', 'Ingredient 27'] },
+  { id: '7', name: 'Cheese Grazed Burger', image: '', calories: '450', ingredients: ['Ingredient 19', 'Ingredient 20', 'Ingredient 21'] },
+  { id: '8', name: 'Cereal', image: '', calories: '450', ingredients: ['Ingredient 22', 'Ingredient 23', 'Ingredient 24'] },
+  { id: '9', name: 'Double Pizza', image: '', calories: '450', ingredients: ['Ingredient 25', 'Ingredient 26', 'Ingredient 27'] },
 ];
 
 // todo: Replace with server data -- alternatives
 const altBreakfastMenuItems: FoodMenuItem[] = [
-  { id: '10', name: 'Pancakes with Syrup', image: '', calories: 'Breakfast option', ingredients: ['Flour', 'Milk', 'Eggs', 'Maple Syrup'] },
-  { id: '11', name: 'Avocado Toast', image: '', calories: 'Breakfast option', ingredients: ['Avocado', 'Whole Grain Bread', 'Salt', 'Pepper'] },
-  { id: '12', name: 'Blueberry Muffins', image: '', calories: 'Breakfast option', ingredients: ['Blueberries', 'Flour', 'Sugar', 'Butter'] },
+{ id: '10', name: 'Pancakes with Syrup', image: '', calories: '400', ingredients: ['Flour', 'Milk', 'Eggs', 'Maple Syrup'] },
+{ id: '11', name: 'Avocado Toast', image: '', calories: '400', ingredients: ['Avocado', 'Whole Grain Bread', 'Salt', 'Pepper'] },
+{ id: '12', name: 'Blueberry Muffins', image: '', calories: '400', ingredients: ['Blueberries', 'Flour', 'Sugar', 'Butter'] },
 ];
 
 const altLunchMenuItems: FoodMenuItem[] = [
-  { id: '13', name: 'Grilled Chicken Salad', image: '', calories: 'Lunch option', ingredients: ['Grilled Chicken', 'Mixed Greens', 'Tomatoes', 'Balsamic Dressing'] },
-  { id: '14', name: 'Vegetarian Wrap', image: '', calories: 'Lunch option', ingredients: ['Hummus', 'Cucumbers', 'Tomatoes', 'Whole Wheat Wrap'] },
-  { id: '15', name: 'Quinoa Bowl', image: '', calories: 'Lunch option', ingredients: ['Quinoa', 'Roasted Vegetables', 'Feta Cheese', 'Olive Oil'] },
+{ id: '13', name: 'Grilled Chicken Salad', image: '', calories: '500', ingredients: ['Grilled Chicken', 'Mixed Greens', 'Tomatoes', 'Balsamic Dressing'] },
+{ id: '14', name: 'Vegetarian Wrap', image: '', calories: '500', ingredients: ['Hummus', 'Cucumbers', 'Tomatoes', 'Whole Wheat Wrap'] },
+{ id: '15', name: 'Quinoa Bowl', image: '', calories: '500', ingredients: ['Quinoa', 'Roasted Vegetables', 'Feta Cheese', 'Olive Oil'] },
 ];
 
 const altDinnerMenuItems: FoodMenuItem[] = [
-  { id: '16', name: 'Salmon with Lemon Dill Sauce', image: '', calories: 'Dinner option', ingredients: ['Salmon', 'Lemon', 'Dill', 'Olive Oil'] },
-  { id: '17', name: 'Pasta Primavera', image: '', calories: 'Dinner option', ingredients: ['Pasta', 'Assorted Vegetables', 'Parmesan Cheese', 'Tomato Sauce'] },
-  { id: '18', name: 'Teriyaki Tofu Stir-Fry', image: '', calories: 'Dinner option', ingredients: ['Tofu', 'Broccoli', 'Carrots', 'Teriyaki Sauce'] },
+{ id: '16', name: 'Salmon with Lemon Dill Sauce', image: '', calories: '450', ingredients: ['Salmon', 'Lemon', 'Dill', 'Olive Oil'] },
+{ id: '17', name: 'Pasta Primavera', image: '', calories: '450', ingredients: ['Pasta', 'Assorted Vegetables', 'Parmesan Cheese', 'Tomato Sauce'] },
+{ id: '18', name: 'Teriyaki Tofu Stir-Fry', image: '', calories: '450', ingredients: ['Tofu', 'Broccoli', 'Carrots', 'Teriyaki Sauce'] },
 ];
   
 export default FoodMenu;
