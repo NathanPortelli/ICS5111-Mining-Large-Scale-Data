@@ -25,10 +25,9 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex flex-col">
       {user ? (
         <>
-          <Header />
           <h1 className="mt-8 text-4xl sm:text-6xl mb-6 font-semibold text-center text-white">
             Personalised Diet Recommender
           </h1>

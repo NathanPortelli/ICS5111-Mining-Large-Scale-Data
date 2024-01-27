@@ -87,8 +87,7 @@ const MealHistory = () => {
   const groupedMeals = groupMealsByDate(meals);
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-800">
-      <Header />
+    <main className="flex flex-col bg-gray-800">
       <section className="mt-8 ml-9 mr-9">
         <h1 className="text-4xl font-semibold text-white mb-6">Meal History</h1>
         {Object.keys(groupedMeals).map((dateString, index) => (

@@ -11,6 +11,7 @@ import {
   Select,
   Snackbar,
 } from "@mui/material";
+import { useUser } from "../hooks/user";
 
 interface FormValues {
   prefBreakfast: string;
@@ -31,6 +32,8 @@ const Preferences: FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const { uid, user } = useUser();
+
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
@@ -44,15 +47,14 @@ const Preferences: FC = () => {
 
   const handleChangePreferences: SubmitHandler<FormValues> = async (data) => {
     try {
-      const uid = auth.currentUser?.uid;
-
       if (uid) {
         const userDocRef = doc(db, "users", uid);
+        const { prefBreakfast, prefLunch, prefDinner } = user || {};
 
         await updateDoc(userDocRef, {
-          prefBreakfast: data.prefBreakfast,
-          prefLunch: data.prefLunch,
-          prefDinner: data.prefDinner,
+          prefBreakfast: data.prefBreakfast || prefBreakfast,
+          prefLunch: data.prefLunch || prefLunch,
+          prefDinner: data.prefDinner || prefDinner,
         });
 
         setSelectedPreferences(Object.values(data));
@@ -68,37 +70,18 @@ const Preferences: FC = () => {
   };
 
   useEffect(() => {
-    const fetchUserPreferences = async () => {
-      try {
-        const uid = auth.currentUser?.uid;
-
-        if (uid) {
-          const userDocRef = doc(db, "users", uid);
-          const userDocSnapshot = await getDoc(userDocRef);
-
-          if (userDocSnapshot.exists()) {
-            const userData = userDocSnapshot.data();
-            const { prefBreakfast, prefLunch, prefDinner } = userData || {};
-
-            setTemporaryPreferences({
-              prefBreakfast: prefBreakfast || "",
-              prefLunch: prefLunch || "",
-              prefDinner: prefDinner || "",
-            });
-            setSelectedPreferences([prefBreakfast, prefLunch, prefDinner]);
-            setShowSelectedPreferences(true);
-          }
-        }
-      } catch (error) {
-        setError("Error fetching user preferences: " + error.message);
-        setSnackbarOpen(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserPreferences();
-  }, []);
+    if (user) {
+      const { prefBreakfast, prefLunch, prefDinner } = user || {};
+      setTemporaryPreferences({
+        prefBreakfast: prefBreakfast || "",
+        prefLunch: prefLunch || "",
+        prefDinner: prefDinner || "",
+      });
+      setSelectedPreferences([prefBreakfast, prefLunch, prefDinner]);
+      setShowSelectedPreferences(true);
+    }
+    setLoading(false);
+  }, [user]);
 
   if (loading) {
     return <p className="text-white">Loading...</p>;
@@ -128,76 +111,74 @@ const Preferences: FC = () => {
                   defaultValue={"any"}
                   label={meal}
                 >
-                  {meal === "Breakfast" ? (
-                    [
-                      <MenuItem key="any" value="any">
-                        ❓ Any
-                      </MenuItem>,
-                      <MenuItem key="eggs" value="eggs">
-                        🥚 Eggs
-                      </MenuItem>,
-                      <MenuItem key="omelette" value="omelette">
-                        🍳 Omelette
-                      </MenuItem>,
-                      <MenuItem key="yogurt" value="yogurt">
-                        🥛 Yogurt
-                      </MenuItem>,
-                      <MenuItem key="oats" value="oats">
-                        🥣 Oats
-                      </MenuItem>,
-                      <MenuItem key="bread" value="bread">
-                        🍞 Bread
-                      </MenuItem>,
-                      <MenuItem key="cereal" value="cereal">
-                        🥣 Cereal
-                      </MenuItem>,
-                      <MenuItem key="fruit" value="fruit">
-                        🍎 Fruit
-                      </MenuItem>,
-                      <MenuItem key="smoothie" value="smoothie">
-                        🥤 Smoothie
-                      </MenuItem>,
-                      <MenuItem key="granola" value="granola">
-                        🥜 Granola
-                      </MenuItem>,       
-                    ]
-                  ) : (
-                    [
-                      <MenuItem key="any" value="any">
-                        ❓ Any
-                      </MenuItem>,
-                      <MenuItem key="rice" value="rice">
-                        🍚 Rice
-                      </MenuItem>,
-                      <MenuItem key="pasta" value="pasta">
-                        🍝 Pasta
-                      </MenuItem>,
-                      <MenuItem key="potato" value="potato">
-                        🥔 Potatoes
-                      </MenuItem>,
-                      <MenuItem key="vegetable" value="vegetable">
-                        🥦 Vegetables
-                      </MenuItem>,
-                      <MenuItem key="soup" value="soup">
-                        🍲 Soup
-                      </MenuItem>,
-                      <MenuItem key="wrap" value="wrap">
-                        🌯 Wrap
-                      </MenuItem>,
-                      <MenuItem key="fish" value="fish">
-                        🐟 Fish
-                      </MenuItem>,
-                      <MenuItem key="pork" value="pork">
-                        🐷 Pork
-                      </MenuItem>,
-                      <MenuItem key="beef" value="beef">
-                        🥩 Beef
-                      </MenuItem>,
-                      <MenuItem key="chicken" value="chicken">
-                        🍗 Chicken
-                      </MenuItem>,
-                    ]
-                  )}
+                  {meal === "Breakfast"
+                    ? [
+                        <MenuItem key="any" value="any">
+                          ❓ Any
+                        </MenuItem>,
+                        <MenuItem key="eggs" value="eggs">
+                          🥚 Eggs
+                        </MenuItem>,
+                        <MenuItem key="omelette" value="omelette">
+                          🍳 Omelette
+                        </MenuItem>,
+                        <MenuItem key="yogurt" value="yogurt">
+                          🥛 Yogurt
+                        </MenuItem>,
+                        <MenuItem key="oats" value="oats">
+                          🥣 Oats
+                        </MenuItem>,
+                        <MenuItem key="bread" value="bread">
+                          🍞 Bread
+                        </MenuItem>,
+                        <MenuItem key="cereal" value="cereal">
+                          🥣 Cereal
+                        </MenuItem>,
+                        <MenuItem key="fruit" value="fruit">
+                          🍎 Fruit
+                        </MenuItem>,
+                        <MenuItem key="smoothie" value="smoothie">
+                          🥤 Smoothie
+                        </MenuItem>,
+                        <MenuItem key="granola" value="granola">
+                          🥜 Granola
+                        </MenuItem>,
+                      ]
+                    : [
+                        <MenuItem key="any" value="any">
+                          ❓ Any
+                        </MenuItem>,
+                        <MenuItem key="rice" value="rice">
+                          🍚 Rice
+                        </MenuItem>,
+                        <MenuItem key="pasta" value="pasta">
+                          🍝 Pasta
+                        </MenuItem>,
+                        <MenuItem key="potato" value="potato">
+                          🥔 Potatoes
+                        </MenuItem>,
+                        <MenuItem key="vegetable" value="vegetable">
+                          🥦 Vegetables
+                        </MenuItem>,
+                        <MenuItem key="soup" value="soup">
+                          🍲 Soup
+                        </MenuItem>,
+                        <MenuItem key="wrap" value="wrap">
+                          🌯 Wrap
+                        </MenuItem>,
+                        <MenuItem key="fish" value="fish">
+                          🐟 Fish
+                        </MenuItem>,
+                        <MenuItem key="pork" value="pork">
+                          🐷 Pork
+                        </MenuItem>,
+                        <MenuItem key="beef" value="beef">
+                          🥩 Beef
+                        </MenuItem>,
+                        <MenuItem key="chicken" value="chicken">
+                          🍗 Chicken
+                        </MenuItem>,
+                      ]}
                 </Select>
               </FormControl>
             </div>

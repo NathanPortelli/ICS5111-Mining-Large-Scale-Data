@@ -56,8 +56,7 @@ const Account = () => {
   }, [uid]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-gray-800">
-      <Header />
+    <main className="flex flex-col items-center bg-gray-800">
       <section className="mt-8 sticky top-0">
         <div className="flex">
           <button

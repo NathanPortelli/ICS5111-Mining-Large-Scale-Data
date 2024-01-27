@@ -1,29 +1,35 @@
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { auth } from './firebase';
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { auth } from "./firebase";
+import { useLocalStorage } from "./hooks/localStorage";
 
 const withAuth = (WrappedComponent) => {
-    const WithAuth = (props) => {
-      const router = useRouter();
-  
-      useEffect(() => {
-        const checkAuth = async () => {
-          if (!auth.currentUser) {
-            // If user is not logged in, redirect to the credentials page
-            router.replace('/credentials');
-          }
-        };
-  
-        checkAuth();
-      }, [router]);
-  
-      return <WrappedComponent {...props} />;
-    };
-  
-    // Display name for the HOC
-    WithAuth.displayName = `withAuth(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
-  
-    return WithAuth;
+  const WithAuth = (props) => {
+    const router = useRouter();
+    const { get, set } = useLocalStorage();
+
+    useEffect(() => {
+      if (get("userId")) {
+        return;
+      }
+      
+      auth.onAuthStateChanged((authUser) => {
+        if (!authUser) {
+          router.push("/credentials");
+        }
+        set("userId", JSON.stringify(authUser!.uid));
+      });
+    }, [router, get, set]);
+
+    return <WrappedComponent {...props} />;
   };
-  
-  export default withAuth;
+
+  // Display name for the HOC
+  WithAuth.displayName = `withAuth(${
+    WrappedComponent.displayName || WrappedComponent.name || "Component"
+  })`;
+
+  return WithAuth;
+};
+
+export default withAuth;
