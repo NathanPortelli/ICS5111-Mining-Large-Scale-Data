@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
-import { POST } from "../utils/api";
 import { MealsAPIResponse } from "../interfaces/mealsAPIResponse";
-import { fetchUserFoodPreferences } from "../utils/user";
+import { POST } from "../utils/api";
+import { useUser } from "./user";
 
 export function useMeals(totalCalories: number = 1500) {
+  const { user } = useUser();
   const [meals, setMeals] = useState<MealsAPIResponse | null>(null);
 
   useEffect(() => {
+    if (!user) return;
     getMeals();
-  }, []);
+  }, [user]);
 
   const getMeals = async () => {
-    const userFoodPreferences = await fetchUserFoodPreferences();
+    const { prefBreakfast, prefLunch, prefDinner } = user!;
 
     await POST("/api/meals", {
       meals: {
-        breakfast: userFoodPreferences?.prefBreakfast,
-        lunch: userFoodPreferences?.prefLunch,
-        dinner: userFoodPreferences?.prefDinner,
+        breakfast: prefBreakfast,
+        lunch: prefLunch,
+        dinner: prefDinner,
       },
       total_calories: totalCalories,
     })

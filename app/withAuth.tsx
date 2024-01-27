@@ -17,7 +17,7 @@ const withAuth = (WrappedComponent) => {
         if (!authUser) {
           router.push("/credentials");
         }
-        set("userId", JSON.stringify(authUser!.uid));
+        set("userId", authUser!.uid);
       });
     }, [router, get, set]);
 
