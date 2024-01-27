@@ -1,11 +1,12 @@
 import { FC, useEffect, useState } from 'react';
+import Modal from 'react-modal';
 import FoodCard from './foodCard';
-import Modal from 'react-modal'
 
-import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
-import WordContent  from './../utils/wordContext'
+import { FoodMenuItem } from '../interfaces/foodMenuItem';
+import { useMeals } from '../hooks/meals';
 
 interface MenuSectionProps {
   title: string;
@@ -119,14 +120,6 @@ const MenuSection: FC<MenuSectionProps> = ({
   )
 };
 
-interface FoodMenuItem {
-  id: string;
-  name: string;
-  image: string;
-  calories: string;
-  ingredients: string[];
-}
-
 const customModalStyles = {
   content: {
     width: '500px',
@@ -135,7 +128,11 @@ const customModalStyles = {
   },
 };
 
-const FoodMenu: FC = () => {
+interface FoodMenuProps {
+  submitKcal: number;
+}
+
+const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
   const uid = auth.currentUser?.uid;
   const email = auth.currentUser?.email;
   const [selectedBreakfast, setSelectedBreakfast] = useState<string | null>(null);
@@ -148,6 +145,8 @@ const FoodMenu: FC = () => {
   const [selectedMealTypeForAlternatives, setSelectedMealTypeForAlternatives] = useState<string | null>(null);
   const [allMenusSelected, setAllMenusSelected] = useState(false); //track overall selection
   const [modalIsOpen, setModalIsOpen] = useState(false); //track modal state
+
+  const { meals } = useMeals(submitKcal);
 
   const handleFindAlternatives = (mealType: string) => {
     setSelectedMealTypeForAlternatives(mealType);
@@ -235,7 +234,7 @@ const FoodMenu: FC = () => {
       <MenuSection
         title="Breakfast"
         mealType="breakfast"
-        items={breakfastMenuItems}
+        items={meals?.breakfast || []}
         altItems={altBreakfastMenuItems}
         selected={selectedBreakfast}
         alternate={alternateBreakfast}
@@ -247,7 +246,7 @@ const FoodMenu: FC = () => {
         selectedFoodName={(mealType) => {
           switch (mealType) {
             case 'breakfast':
-              return alternateBreakfast ? breakfastMenuItems.find((altItem) => altItem.id === alternateBreakfast)?.name || '' : '';
+              return alternateBreakfast ? meals?.breakfast.find((altItem) => altItem.id === alternateBreakfast)?.title || '' : '';
             default:
               return '';
           }
@@ -257,7 +256,7 @@ const FoodMenu: FC = () => {
       <MenuSection
         title="Lunch"
         mealType="lunch"
-        items={lunchMenuItems}
+        items={meals?.lunch || []}
         altItems={altLunchMenuItems}
         selected={selectedLunch}
         alternate={alternateLunch}
@@ -269,7 +268,7 @@ const FoodMenu: FC = () => {
         selectedFoodName={(mealType) => {
           switch (mealType) {
             case 'lunch':
-              return alternateLunch ? lunchMenuItems.find((altItem) => altItem.id === alternateLunch)?.name || '' : '';
+              return alternateLunch ? meals?.lunch.find((altItem) => altItem.id === alternateLunch)?.title || '' : '';
             default:
               return '';
           }
@@ -279,7 +278,7 @@ const FoodMenu: FC = () => {
       <MenuSection
         title="Dinner"
         mealType="dinner"
-        items={dinnerMenuItems}
+        items={meals?.dinner || []}
         altItems={altDinnerMenuItems}
         selected={selectedDinner}
         alternate={alternateDinner}
@@ -291,7 +290,7 @@ const FoodMenu: FC = () => {
         selectedFoodName={(mealType) => {
           switch (mealType) {
             case 'dinner':
-              return alternateDinner ? dinnerMenuItems.find((altItem) => altItem.id === alternateDinner)?.name || '' : '';
+              return alternateDinner ? meals?.dinner.find((altItem) => altItem.id === alternateDinner)?.title || '' : '';
             default:
               return '';
           }
@@ -323,7 +322,7 @@ const FoodMenu: FC = () => {
           <div className="text-center mt-8">
             <button
               type="button"
-              className="text-xl font-semibold rounded-md shadow-md px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue transition duration-300"
+              className="text-xl font-semibold shadow-md px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue transition duration-300"
               onClick={closeModal}
             >
               Close
@@ -335,42 +334,23 @@ const FoodMenu: FC = () => {
   );
 };
 
-// todo: Replace with server data
-const breakfastMenuItems: FoodMenuItem[] = [
-  { id: '1', name: 'Coco Pops', image: '', calories: '400', ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'] },
-  { id: '2', name: 'Waffles', image: '', calories: '400', ingredients: ['Ingredient 4', 'Ingredient 5', 'Ingredient 6'] },
-  { id: '3', name: 'Just Coffee', image: '', calories: '400', ingredients: ['Ingredient 7', 'Ingredient 8', 'Ingredient 9'] },
-];
-
-const lunchMenuItems: FoodMenuItem[] = [
-  { id: '4', name: '16oz steak with fries', image: '', calories: '500', ingredients: ['Ingredient 10', 'Ingredient 11', 'Ingredient 12'] },
-  { id: '5', name: 'Krabby Patty', image: '', calories: '500', ingredients: ['Ingredient 13', 'Ingredient 14', 'Ingredient 15'] },
-  { id: '6', name: 'Salad', image: '', calories: '500', ingredients: ['Ingredient 16', 'Ingredient 17', 'Ingredient 18'] },
-];
-
-const dinnerMenuItems: FoodMenuItem[] = [
-  { id: '7', name: 'Cheese Grazed Burger', image: '', calories: '450', ingredients: ['Ingredient 19', 'Ingredient 20', 'Ingredient 21'] },
-  { id: '8', name: 'Cereal', image: '', calories: '450', ingredients: ['Ingredient 22', 'Ingredient 23', 'Ingredient 24'] },
-  { id: '9', name: 'Double Pizza', image: '', calories: '450', ingredients: ['Ingredient 25', 'Ingredient 26', 'Ingredient 27'] },
-];
-
 // todo: Replace with server data -- alternatives
 const altBreakfastMenuItems: FoodMenuItem[] = [
-{ id: '10', name: 'Pancakes with Syrup', image: '', calories: '400', ingredients: ['Flour', 'Milk', 'Eggs', 'Maple Syrup'] },
-{ id: '11', name: 'Avocado Toast', image: '', calories: '400', ingredients: ['Avocado', 'Whole Grain Bread', 'Salt', 'Pepper'] },
-{ id: '12', name: 'Blueberry Muffins', image: '', calories: '400', ingredients: ['Blueberries', 'Flour', 'Sugar', 'Butter'] },
+{ id: '10', title: 'Pancakes with Syrup', image: '', calories: '400', ingredients: ['Flour', 'Milk', 'Eggs', 'Maple Syrup'] },
+{ id: '11', title: 'Avocado Toast', image: '', calories: '400', ingredients: ['Avocado', 'Whole Grain Bread', 'Salt', 'Pepper'] },
+{ id: '12', title: 'Blueberry Muffins', image: '', calories: '400', ingredients: ['Blueberries', 'Flour', 'Sugar', 'Butter'] },
 ];
 
 const altLunchMenuItems: FoodMenuItem[] = [
-{ id: '13', name: 'Grilled Chicken Salad', image: '', calories: '500', ingredients: ['Grilled Chicken', 'Mixed Greens', 'Tomatoes', 'Balsamic Dressing'] },
-{ id: '14', name: 'Vegetarian Wrap', image: '', calories: '500', ingredients: ['Hummus', 'Cucumbers', 'Tomatoes', 'Whole Wheat Wrap'] },
-{ id: '15', name: 'Quinoa Bowl', image: '', calories: '500', ingredients: ['Quinoa', 'Roasted Vegetables', 'Feta Cheese', 'Olive Oil'] },
+{ id: '13', title: 'Grilled Chicken Salad', image: '', calories: '500', ingredients: ['Grilled Chicken', 'Mixed Greens', 'Tomatoes', 'Balsamic Dressing'] },
+{ id: '14', title: 'Vegetarian Wrap', image: '', calories: '500', ingredients: ['Hummus', 'Cucumbers', 'Tomatoes', 'Whole Wheat Wrap'] },
+{ id: '15', title: 'Quinoa Bowl', image: '', calories: '500', ingredients: ['Quinoa', 'Roasted Vegetables', 'Feta Cheese', 'Olive Oil'] },
 ];
 
 const altDinnerMenuItems: FoodMenuItem[] = [
-{ id: '16', name: 'Salmon with Lemon Dill Sauce', image: '', calories: '450', ingredients: ['Salmon', 'Lemon', 'Dill', 'Olive Oil'] },
-{ id: '17', name: 'Pasta Primavera', image: '', calories: '450', ingredients: ['Pasta', 'Assorted Vegetables', 'Parmesan Cheese', 'Tomato Sauce'] },
-{ id: '18', name: 'Teriyaki Tofu Stir-Fry', image: '', calories: '450', ingredients: ['Tofu', 'Broccoli', 'Carrots', 'Teriyaki Sauce'] },
+{ id: '16', title: 'Salmon with Lemon Dill Sauce', image: '', calories: '450', ingredients: ['Salmon', 'Lemon', 'Dill', 'Olive Oil'] },
+{ id: '17', title: 'Pasta Primavera', image: '', calories: '450', ingredients: ['Pasta', 'Assorted Vegetables', 'Parmesan Cheese', 'Tomato Sauce'] },
+{ id: '18', title: 'Teriyaki Tofu Stir-Fry', image: '', calories: '450', ingredients: ['Tofu', 'Broccoli', 'Carrots', 'Teriyaki Sauce'] },
 ];
   
 export default FoodMenu;
