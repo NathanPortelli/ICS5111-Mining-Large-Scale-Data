@@ -136,12 +136,30 @@ const Preferences: FC = () => {
                       <MenuItem key="eggs" value="eggs">
                         🥚 Eggs
                       </MenuItem>,
+                      <MenuItem key="omelette" value="omelette">
+                        🍳 Omelette
+                      </MenuItem>,
                       <MenuItem key="yogurt" value="yogurt">
                         🥛 Yogurt
                       </MenuItem>,
                       <MenuItem key="oats" value="oats">
                         🥣 Oats
                       </MenuItem>,
+                      <MenuItem key="bread" value="bread">
+                        🍞 Bread
+                      </MenuItem>,
+                      <MenuItem key="cereal" value="cereal">
+                        🥣 Cereal
+                      </MenuItem>,
+                      <MenuItem key="fruit" value="fruit">
+                        🍎 Fruit
+                      </MenuItem>,
+                      <MenuItem key="smoothie" value="smoothie">
+                        🥤 Smoothie
+                      </MenuItem>,
+                      <MenuItem key="granola" value="granola">
+                        🥜 Granola
+                      </MenuItem>,       
                     ]
                   ) : (
                     [
@@ -150,6 +168,27 @@ const Preferences: FC = () => {
                       </MenuItem>,
                       <MenuItem key="rice" value="rice">
                         🍚 Rice
+                      </MenuItem>,
+                      <MenuItem key="pasta" value="pasta">
+                        🍝 Pasta
+                      </MenuItem>,
+                      <MenuItem key="potato" value="potato">
+                        🥔 Potatoes
+                      </MenuItem>,
+                      <MenuItem key="vegetable" value="vegetable">
+                        🥦 Vegetables
+                      </MenuItem>,
+                      <MenuItem key="soup" value="soup">
+                        🍲 Soup
+                      </MenuItem>,
+                      <MenuItem key="wrap" value="wrap">
+                        🌯 Wrap
+                      </MenuItem>,
+                      <MenuItem key="fish" value="fish">
+                        🐟 Fish
+                      </MenuItem>,
+                      <MenuItem key="pork" value="pork">
+                        🐷 Pork
                       </MenuItem>,
                       <MenuItem key="beef" value="beef">
                         🥩 Beef
