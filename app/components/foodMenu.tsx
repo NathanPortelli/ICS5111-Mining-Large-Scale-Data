@@ -81,17 +81,7 @@ const MenuSection: FC<MenuSectionProps> = ({
               }}
             >
               {alternate === item.id ? 'Hide Alternatives' : 'Find Alternatives'}
-            </button>
-            {/* <button
-              type="button"
-              className={`w-full text-blue-500 px-4 py-2 font-semibold bg-white border-4 border-blue-500 rounded-md transition duration-300 hover:opacity-70 mb-3`}
-              // onClick={() =>
-              //   isAlternative ? setSelectedMealTypeForAlternatives(null) : handleFindAlternatives(mealType)
-              // }
-            >
-              {isAlternative ? 'Return to Original' : `Find Alternatives`}
-            </button> */}
-            
+            </button>           
           </div>
         ))}
       </div>
@@ -197,30 +187,45 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
     }
   };
 
-  // Check if all menus have selected option
-  useEffect(() => {
-    setAllMenusSelected(selectedBreakfast !== null && selectedLunch !== null && selectedDinner !== null);
-  }, [selectedBreakfast, selectedLunch, selectedDinner]);
-
-  const saveMealToFirestore = async (period: string, mealId: string | null) => {
+  const saveMealToFirestore = async () => {
     const currentTime = new Date();
-    if (uid && mealId) {
+    if (uid) {
       const mealHistoryCollection = collection(db, 'mealHistory');
-      const mealHistoryDoc = doc(mealHistoryCollection, `${uid}_${currentTime}_${period}`);
+      const mealHistoryDoc = doc(mealHistoryCollection, `${uid}_${currentTime}`);
+  
+      const breakfast_notpicked = meals?.breakfast
+        .filter(item => item.id !== selectedBreakfast)
+        .map(item => item.id);
+  
+      const lunch_notpicked = meals?.lunch
+        .filter(item => item.id !== selectedLunch)
+        .map(item => item.id);
+  
+      const dinner_notpicked = meals?.dinner
+        .filter(item => item.id !== selectedDinner)
+        .map(item => item.id);
+  
       await setDoc(mealHistoryDoc, {
         email: email,
         date: currentTime,
-        meal: mealId,
-        period,
-      });     
+        breakfast: selectedBreakfast || null,
+        lunch: selectedLunch || null,
+        dinner: selectedDinner || null,
+        breakfast_notpicked,
+        lunch_notpicked,
+        dinner_notpicked,
+      });
     }
   };
 
+  // Check if all menus have selected option
+  useEffect(() => {
+    setAllMenusSelected(selectedBreakfast !== null && selectedLunch !== null && selectedDinner !== null);
+  }, [selectedBreakfast, selectedLunch, selectedDinner]);  
+
   const handleSetMenu = async () => {
     if (allMenusSelected) {
-      await saveMealToFirestore('breakfast', selectedBreakfast);
-      await saveMealToFirestore('lunch', selectedLunch);
-      await saveMealToFirestore('dinner', selectedDinner);
+      await saveMealToFirestore();
       setModalIsOpen(true);
     }
   };
@@ -296,8 +301,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
           }
         }}
       />
-
-      {/* Show if all 3 options selected */}
+      {/* Shown only if all 3 meals selected */}
       {allMenusSelected && (
         <button
           className="font-bold text-xl w-full mt-6 mb-3 bg-green-500 text-white px-4 py-2 rounded-md transition duration-300 hover:opacity-70"

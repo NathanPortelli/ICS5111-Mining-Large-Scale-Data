@@ -13,10 +13,15 @@ import Image from 'next/image';
 interface Meal {
   date: Timestamp;
   email: string;
-  meal: string;
-  period: string;
-  calories: number;
-  instructions: string;
+  breakfast: string;
+  b_calories: number;
+  b_instructions: string;
+  lunch: string;
+  l_calories: number;
+  l_instructions: string;
+  dinner: string;
+  d_calories: number;
+  d_instructions: string;
   ingredients: string[];
 }
 
@@ -86,35 +91,40 @@ const MealHistory = () => {
       <Header />
       <section className="mt-8 ml-9 mr-9">
         <h1 className="text-4xl font-semibold text-white mb-6">Meal History</h1>
-        <div className="flex flex-wrap">
-          {meals.map((meal, index) => (
-            <div key={index} className="w-full md:w-1/2 lg:w-1/3 p-4">
-              <div className="bg-white p-4 mb-4 rounded-md shadow-md">
-                <h2 className="text-xl mb-3">
-                  {meal.date.toDate().toLocaleDateString('en-US', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })} | {meal.period.charAt(0).toUpperCase() + meal.period.slice(1)}
-                </h2>
-                <Image
-                  width={200}
-                  height={300}
-                  src={''} 
-                  alt={`Image for ${meal.meal}`}
-                  className="mb-2 rounded-md"
-                  style={{ maxHeight: '200px' }} 
-                />
-                <h3 className="text-lg font-semibold mb-2">
-                  {meal.meal}
-                </h3>
-                <p className="text-gray-700 mb-2">Calories: {meal.calories}</p>
-                <p className="text-gray-700 mb-2">Instructions: {meal.instructions}</p>
-                <p className="text-gray-700 mb-2">Ingredients: {meal.ingredients}</p>
-              </div>
+        {Object.keys(groupedMeals).map((dateString, index) => (
+          <div key={index} className="mb-8">
+            <h2 className="text-2xl text-white mb-4">{dateString}</h2>
+            <div className="flex flex-wrap">
+              {groupedMeals[dateString].map((meal, mealIndex) => (
+                <div key={mealIndex}>
+                  <div className="pt-4 mb-4 flex">
+                    {['breakfast', 'lunch', 'dinner'].map((mealType) => (
+                    <div key={mealType} className='bg-white rounded-md shadow-md mr-6 p-5 flex-grow'>
+                      <h3 className="text-lg font-semibold mb-2">
+                          {meal[mealType]}
+                      </h3>
+                      <div className="text-gray-700 mb-2">
+                          <p>{mealType.charAt(0).toUpperCase() + mealType.slice(1)}</p>
+                      </div>
+                      <Image
+                          width={200}
+                          height={300}
+                          src={''} 
+                          alt={`Image for ${meal[mealType]}`}
+                          className="mb-2 rounded-md"
+                          style={{ maxHeight: '200px' }} 
+                      />
+                      <p className="text-gray-700 mb-2">Calories: {meal[mealType.charAt(0) + '_calories']}</p>
+                      <p className="text-gray-700 mb-2">Instructions: {meal[mealType.charAt(0) + '_instructions']}</p>
+                      <p className="text-gray-700 mb-2">Ingredients: {meal.ingredients}</p>
+                    </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </section>
       {/* Snackbar for displaying errors */}
       <Snackbar

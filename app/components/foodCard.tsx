@@ -20,7 +20,9 @@ const FoodCard: FC<FoodCardProps> = ({ id, title, image, calories, selected, alt
 
   return (
     <div className={`bg-white p-4 rounded-md shadow-md border-4 ${borderColorClass} rounded-md p-4 mb-4`}>
-      <Image src={image} alt={title} className="mb-2 rounded-md" width={200} height={300}/>
+      <div className="relative w-full h-48 mb-2 rounded-md overflow-hidden">
+        <Image src={image} alt={title} layout="fill" objectFit="cover" />
+      </div>
       {/* <ul className="list-disc ml-4">
         {ingredients.map((ingredient, index) => (
           <li key={index}>{ingredient}</li>
