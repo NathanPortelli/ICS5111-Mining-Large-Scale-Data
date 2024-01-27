@@ -1,14 +1,13 @@
 'use client'
 
+import { Timestamp, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { collection, orderBy, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import { auth, db } from './../firebase';
 
 import { Snackbar } from '@mui/material';
 
-import Header from './../components/header';
-import withAuth from './../withAuth';
 import Image from 'next/image';
+import withAuth from './../withAuth';
 
 interface Meal {
   date: Timestamp;

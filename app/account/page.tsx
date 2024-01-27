@@ -1,15 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 import { auth, db } from './../firebase';
 
-import Header from './../components/header';
-import PreferenceAllergies from '../components/preferencesAllergies';
-import Preferences from './../components/preferences';
-import PersonalDetails from './../components/personalDetails';
-import { NextPage } from 'next';
 import { Snackbar } from '@mui/material';
+import PreferenceAllergies from '../components/preferencesAllergies';
+import PersonalDetails from './../components/personalDetails';
+import Preferences from './../components/preferences';
 
 import withAuth from './../withAuth';
 

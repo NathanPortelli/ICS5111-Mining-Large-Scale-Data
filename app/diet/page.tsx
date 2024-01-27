@@ -3,7 +3,6 @@
 import { useState } from "react";
 
 import FoodMenu from "./../components/foodMenu";
-import Header from "./../components/header";
 import PersonalDetails from "./../components/personalDetails";
 import Preferences from "./../components/preferences";
 
