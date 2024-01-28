@@ -206,7 +206,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
         .map(item => item.id);
   
       await setDoc(mealHistoryDoc, {
-        email: email,
+        uid: uid,
         date: currentTime,
         breakfast: selectedBreakfast || null,
         lunch: selectedLunch || null,

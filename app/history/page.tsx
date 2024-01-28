@@ -1,17 +1,25 @@
-'use client'
+"use client";
 
-import { Timestamp, collection, getDocs, orderBy, query, where } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import { auth, db } from './../firebase';
+import {
+  Timestamp,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { use, useEffect, useState } from "react";
+import { auth, db } from "./../firebase";
 
-import { Snackbar } from '@mui/material';
+import { Snackbar } from "@mui/material";
 
-import Image from 'next/image';
-import withAuth from './../withAuth';
+import Image from "next/image";
+import withAuth from "./../withAuth";
+import { useUser } from "../hooks/user";
 
 interface Meal {
   date: Timestamp;
-  email: string;
+  uid: string;
   breakfast: string;
   b_calories: number;
   b_instructions: string;
@@ -28,10 +36,10 @@ const groupMealsByDate = (meals: Meal[]) => {
   const groupedMeals: { [date: string]: Meal[] } = {};
 
   meals.forEach((meal) => {
-    const dateString = meal.date.toDate().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
+    const dateString = meal.date.toDate().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
 
     if (!groupedMeals[dateString]) {
@@ -49,39 +57,46 @@ const MealHistory = () => {
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
+  const { uid } = useUser();
+
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
   useEffect(() => {
-    const userEmail = auth.currentUser?.email;
-    if (userEmail) {
+    if (uid) {
+      fetchData(uid);
+    }
+  }, [uid]);
+
+  useEffect(() => {
+    console.log(meals);
+  }, [meals]);
+
+  const fetchData = async (uid: string) => {
+    try {
       const q = query(
-        collection(db, 'mealHistory'),
-        where('email', '==', userEmail),
-        orderBy('date', 'desc'),
+        collection(db, "mealHistory"),
+        where("uid", "==", uid),
+        orderBy("date", "desc")
       );
 
-      const fetchData = async () => {
-        try {
-          const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(q);
 
-          if (querySnapshot.empty) {
-            console.log('No history found.');
-            return;
-          }
+      if (querySnapshot.empty) {
+        console.log("No history found.");
+        return;
+      }
 
-          const mealData = querySnapshot.docs.map((doc) => doc.data() as Meal);
-          setMeals(mealData);
-        } catch (error) {
-          setError('Error fetching history: ' + error.message);
-          setSnackbarOpen(true);
-        }
-      };
+      const mealData = querySnapshot.docs.map((doc) => doc.data() as Meal);
+      setMeals(mealData);
+    } catch (error) {
+      setError("Error fetching history: " + error.message);
+      console.log("Error fetching history: ", error.message);
 
-      fetchData();
+      setSnackbarOpen(true);
     }
-  }, []);
+  };
 
   const groupedMeals = groupMealsByDate(meals);
 
@@ -96,26 +111,39 @@ const MealHistory = () => {
               {groupedMeals[dateString].map((meal, mealIndex) => (
                 <div key={mealIndex}>
                   <div className="pt-4 mb-4 flex">
-                    {['breakfast', 'lunch', 'dinner'].map((mealType) => (
-                    <div key={mealType} className='bg-white rounded-md shadow-md mr-6 p-5 flex-grow'>
-                      <h3 className="text-lg font-semibold mb-2">
+                    {["breakfast", "lunch", "dinner"].map((mealType) => (
+                      <div
+                        key={mealType}
+                        className="bg-white rounded-md shadow-md mr-6 p-5 flex-grow"
+                      >
+                        <h3 className="text-lg font-semibold mb-2">
                           {meal[mealType]}
-                      </h3>
-                      <div className="text-gray-700 mb-2">
-                          <p>{mealType.charAt(0).toUpperCase() + mealType.slice(1)}</p>
-                      </div>
-                      <Image
+                        </h3>
+                        <div className="text-gray-700 mb-2">
+                          <p>
+                            {mealType.charAt(0).toUpperCase() +
+                              mealType.slice(1)}
+                          </p>
+                        </div>
+                        <Image
                           width={200}
                           height={300}
-                          src={''} 
+                          src={""}
                           alt={`Image for ${meal[mealType]}`}
                           className="mb-2 rounded-md"
-                          style={{ maxHeight: '200px' }} 
-                      />
-                      <p className="text-gray-700 mb-2">Calories: {meal[mealType.charAt(0) + '_calories']}</p>
-                      <p className="text-gray-700 mb-2">Instructions: {meal[mealType.charAt(0) + '_instructions']}</p>
-                      <p className="text-gray-700 mb-2">Ingredients: {meal.ingredients}</p>
-                    </div>
+                          style={{ maxHeight: "200px" }}
+                        />
+                        <p className="text-gray-700 mb-2">
+                          Calories: {meal[mealType.charAt(0) + "_calories"]}
+                        </p>
+                        <p className="text-gray-700 mb-2">
+                          Instructions:{" "}
+                          {meal[mealType.charAt(0) + "_instructions"]}
+                        </p>
+                        <p className="text-gray-700 mb-2">
+                          Ingredients: {meal.ingredients}
+                        </p>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -129,7 +157,7 @@ const MealHistory = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message={error || ''}
+        message={error || ""}
       />
     </main>
   );
