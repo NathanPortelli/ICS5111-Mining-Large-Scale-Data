@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { MealsAPIResponse } from "../interfaces/mealsAPIResponse";
 import { POST } from "../utils/api";
 import { useUser } from "./user";
+import { AlternativesMealsAPIResponse } from "../interfaces/alternativesMealsAPIResponse";
+import { set } from "firebase/database";
 
 export function useMeals(totalCalories: number = 1500) {
   const { user } = useUser();
@@ -32,8 +34,21 @@ export function useMeals(totalCalories: number = 1500) {
       });
   };
 
+  const getAlternativeMeals = async (
+    title: string,
+    calories: string | number
+  ) => {
+    const response = await POST("/api/meals/alternatives", {
+      meal_title: title,
+      calories: calories,
+    });
+
+    return response.json();
+  };
+
   return {
     getMeals,
+    getAlternativeMeals,
     meals,
   };
 }

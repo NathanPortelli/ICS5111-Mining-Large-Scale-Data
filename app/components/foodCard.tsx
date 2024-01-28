@@ -3,10 +3,10 @@ import React from 'react';
 import { FC } from 'react';
 
 interface FoodCardProps {
-  id: string;
+  id: string | number;
   title: string;
   image: string;
-  calories: string;
+  calories: string | number;
   selected: boolean;
   alternate: boolean;
 }

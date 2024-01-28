@@ -113,5 +113,5 @@ export async function POST(request: Request) {
     });
   });
 
-  return okResponse({ alternatives: cleanedRecipes });
+  return okResponse({alternatives: cleanedRecipes});
 }
