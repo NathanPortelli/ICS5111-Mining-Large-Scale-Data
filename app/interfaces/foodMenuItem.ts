@@ -1,7 +1,7 @@
 export interface FoodMenuItem {
-    id: string;
+    id: string | number;
     title: string;
     image: string;
-    calories: string;
+    calories: string | number;
     ingredients?: string[];
   }

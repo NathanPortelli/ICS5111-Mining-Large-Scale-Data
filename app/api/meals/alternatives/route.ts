@@ -1,15 +1,16 @@
-import { AlternativesMealRequestBody } from "@/app/interfaces/alternativesMealRequestBody";
-import { okResponse, errorResponse } from "@/app/utils/responses";
-import {
-  extractTextToArray,
-  removeWordsFromSentence,
-  splitSentencesIntoWords,
-} from "@/app/utils/textUtil";
 import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
+import { AlternativesMealRequestBody } from "@/app/interfaces/alternativesMealRequestBody";
+import { FoodMenuItem } from "@/app/interfaces/foodMenuItem";
 import { getAllData } from "@/app/utils/firebaseUtil";
+import { errorResponse, okResponse } from "@/app/utils/responses";
+import {
+  removeWordsFromSentence,
+  splitSentencesIntoWords
+} from "@/app/utils/textUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
 
 interface JORecipe {
+  Id: string;
   Title: string;
   Calories: number;
   Calories__1: number;
@@ -101,5 +102,16 @@ export async function POST(request: Request) {
 
   const threeRandomRecipes = chooseThreeRandomRecipes(filterJORecipesByUniqueIngredients);
 
-  return okResponse({ alternatives: threeRandomRecipes });
+  const cleanedRecipes: FoodMenuItem[] = [];
+
+  threeRandomRecipes.forEach((recipe) => {
+    cleanedRecipes.push({
+      id: recipe.Id,
+      title: recipe.Title,
+      image: recipe.Image,
+      calories: recipe.Calories,
+    });
+  });
+
+  return okResponse({ alternatives: cleanedRecipes });
 }
