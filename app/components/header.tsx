@@ -1,21 +1,21 @@
 "use client";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCog, FaSignOutAlt, FaUser } from "react-icons/fa";
 
 import { auth } from "./../firebase";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useUser } from "../hooks/user";
 import { useLocalStorage } from "../hooks/localStorage";
+import { useUser } from "../hooks/user";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [hideNavBar, setHideNavBar] = useState(false); // Hide the navbar on the credentials page
+  const [showNavBar, setShowNavBar] = useState(false);
   const { remove } = useLocalStorage();
-  const { uid, user } = useUser();
+  const { user } = useUser();
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
@@ -25,6 +25,7 @@ const Header = () => {
     try {
       await auth.signOut();
       remove("userId");
+      toggleDropdown();
       router.push("/credentials"); // Redirect to the credentials page after logout
     } catch (error) {
       console.error("Error during logout:", error);
@@ -32,12 +33,16 @@ const Header = () => {
   };
 
   useEffect(() => {
-    setHideNavBar(!(pathname === "/credentials"));
-  }, [pathname]);
+    if ((pathname !== "/credentials" && user) || (pathname === "/")) {
+        setShowNavBar(true);
+    } else {
+      setShowNavBar(false);
+    }
+  }, [pathname, user]);
 
   return (
     <>
-      {hideNavBar ? (
+      {showNavBar ? (
         <header className="sticky top-0 z-50 w-full flex items-center justify-between p-4 bg-black text-white border-b border-white">
           <div className="flex items-center">
             <h1
@@ -89,7 +94,7 @@ const Header = () => {
             </div>
             {showDropdown && (
               <div className="absolute top-10 right-0 bg-white text-black rounded shadow-md p-2">
-                {uid ? (
+                {user ? (
                   <>
                     <Link href="/account">
                       <div className="flex items-center space-x-2 cursor-pointer">
