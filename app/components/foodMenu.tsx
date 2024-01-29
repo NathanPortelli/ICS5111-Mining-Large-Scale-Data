@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import Modal from "react-modal";
 import FoodCard from "./foodCard";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
@@ -68,41 +69,47 @@ const MenuSection: FC<MenuSectionProps> = ({
           {title} Menu
         </h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {items?.map((item) => (
-          <div key={item.id}>
-            <FoodCard
-              key={item.id}
-              {...item}
-              selected={selected === item.id}
-              alternate={alternate === item.id}
-            />
-            <button
-              className={`w-full bg-blue-500 text-white px-4 py-2 mb-2 rounded-md transition duration-300 hover:opacity-70 ${
-                selected === item.id ? "bg-red-500" : ""
-              }`}
-              onClick={() => handleSelect(mealType, item.id)}
-            >
-              {selected === item.id ? `Unpick ${title}` : `Pick ${title}`}
-            </button>
-            <button
-              className={`w-full text-blue-500 px-4 py-2 font-semibold ${
-                alternate === item.id
-                  ? "bg-green-700 text-white"
-                  : "bg-white text-blue-500"
-              } rounded-md transition duration-300 hover:opacity-70 mb-2`}
-              onClick={() => {
-                handleAlternate(mealType, item.id, item.title, item.calories);
-                setSelectedMealTypeForAlternatives(mealType);
-              }}
-            >
-              {alternate === item.id
-                ? "Hide Alternatives"
-                : "Find Alternatives"}
-            </button>
-          </div>
-        ))}
-      </div>
+      {items && items.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {items?.map((item) => (
+            <div key={item.id}>
+              <FoodCard
+                key={item.id}
+                {...item}
+                selected={selected === item.id}
+                alternate={alternate === item.id}
+              />
+              <button
+                className={`w-full bg-blue-500 text-white px-4 py-2 mb-2 rounded-md transition duration-300 hover:opacity-70 ${
+                  selected === item.id ? "bg-red-500" : ""
+                }`}
+                onClick={() => handleSelect(mealType, item.id)}
+              >
+                {selected === item.id ? `Unpick ${title}` : `Pick ${title}`}
+              </button>
+              <button
+                className={`w-full text-blue-500 px-4 py-2 font-semibold ${
+                  alternate === item.id
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-blue-500"
+                } rounded-md transition duration-300 hover:opacity-70 mb-2`}
+                onClick={() => {
+                  handleAlternate(mealType, item.id, item.title, item.calories);
+                  setSelectedMealTypeForAlternatives(mealType);
+                }}
+              >
+                {alternate === item.id
+                  ? "Hide Alternatives"
+                  : "Find Alternatives"}
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-row justify-center">
+          <CircularProgress />
+        </div>
+      )}
       {alternate && (
         <div className="bg-green-100 mt-5 p-5 rounded-md py-2">
           <h3 className="text-xl font-semibold mt-3 mb-2 text-green-700">
@@ -133,8 +140,14 @@ const MenuSection: FC<MenuSectionProps> = ({
                   </div>
                 ))}
               </>
+            ) : altItems && altItems?.length === 0 ? (
+              <div className="flex flex-row justify-center">
+                <h3>No Alternative Results Found.</h3>
+              </div>
             ) : (
-              <h3>No Alternative Results Found.</h3>
+              <div className="flex flex-row justify-center">
+                <CircularProgress />
+              </div>
             )}
           </div>
         </div>
@@ -308,7 +321,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
   };
 
   return (
-    <main className="flex min-h-screen flex-col justify-center">
+    <main className="flex flex-col justify-center">
       <MenuSection
         title="Breakfast"
         mealType="breakfast"

@@ -11,10 +11,10 @@ export function useMeals(totalCalories: number = 1500) {
 
   useEffect(() => {
     if (!user) return;
-    getMeals();
-  }, [user]);
+    getMeals(totalCalories);
+  }, [user, totalCalories]);
 
-  const getMeals = async () => {
+  const getMeals = async (total_calories: number) => {
     const { prefBreakfast, prefLunch, prefDinner } = user!;
 
     await POST("/api/meals", {
@@ -23,7 +23,7 @@ export function useMeals(totalCalories: number = 1500) {
         lunch: prefLunch,
         dinner: prefDinner,
       },
-      total_calories: totalCalories,
+      total_calories: total_calories,
     })
       .then(async (response) => {
         const responseMeals = await response.json();

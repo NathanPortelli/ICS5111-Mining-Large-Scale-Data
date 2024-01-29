@@ -21,6 +21,7 @@ const Recommender = () => {
   const { user } = useUser();
 
   const onSubmit = () => {
+    setShowFoodMenu(false);
     const randomVariation = Math.floor(Math.random() * 101) - 50; // Random number between -50 and 50 so that the menu items change every time
     const newSubmitKcal = customKcal + randomVariation;
     setSubmitKcal(Math.max(newSubmitKcal, 0)); // Ensure that newSubmitKcal is not negative
