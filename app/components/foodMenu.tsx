@@ -266,7 +266,11 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
     }
   };
 
-  const saveMealToFirestore = async () => {
+  const saveMealToFirestore = async (
+    unpicked_breakfast_options,
+    unpicked_lunch_options,
+    unpicked_dinner_options
+  ) => {
     const currentTime = new Date();
     if (uid) {
       const mealHistoryCollection = collection(db, "mealHistory");
@@ -275,27 +279,15 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
         `${uid}_${currentTime}`
       );
 
-      const breakfast_notpicked = meals?.breakfast
-        .filter((item) => item.id !== selectedBreakfast)
-        .map((item) => item.id);
-
-      const lunch_notpicked = meals?.lunch
-        .filter((item) => item.id !== selectedLunch)
-        .map((item) => item.id);
-
-      const dinner_notpicked = meals?.dinner
-        .filter((item) => item.id !== selectedDinner)
-        .map((item) => item.id);
-
       await setDoc(mealHistoryDoc, {
         uid: uid,
         date: currentTime,
         breakfast: selectedBreakfast || null,
         lunch: selectedLunch || null,
         dinner: selectedDinner || null,
-        breakfast_notpicked,
-        lunch_notpicked,
-        dinner_notpicked,
+        unpicked_breakfast_options,
+        unpicked_lunch_options,
+        unpicked_dinner_options,
       });
     }
   };
@@ -311,8 +303,51 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
 
   const handleSetMenu = async () => {
     if (allMenusSelected) {
-      await saveMealToFirestore();
-      setModalIsOpen(true);
+      const original_breakfast_notpicked = meals?.breakfast
+        .filter((item) => item.id !== selectedBreakfast)
+        .map((item) => item.id);
+
+      const original_lunch_notpicked = meals?.lunch
+        .filter((item) => item.id !== selectedLunch)
+        .map((item) => item.id);
+
+      const original_dinner_notpicked = meals?.dinner
+        .filter((item) => item.id !== selectedDinner)
+        .map((item) => item.id);
+
+      const alternative_breakfast_notpicked = alternateBreakfastMenuItems
+        ?.filter((item) => item.id !== selectedBreakfast)
+        .map((item) => item.id);
+
+      const alternative_lunch_notpicked = alternateLunchMenuItems
+        ?.filter((item) => item.id !== selectedLunch)
+        .map((item) => item.id);
+
+      const alternative_dinner_notpicked = alternateDinnerMenuItems
+        ?.filter((item) => item.id !== selectedDinner)
+        .map((item) => item.id);
+
+      const unpicked_breakfast_options = (
+        original_breakfast_notpicked || []
+      ).concat(alternative_breakfast_notpicked || []);
+      const unpicked_lunch_options = (original_lunch_notpicked || []).concat(
+        alternative_lunch_notpicked || []
+      );
+      const unpicked_dinner_options = (original_dinner_notpicked || []).concat(
+        alternative_dinner_notpicked || []
+      );
+
+      await saveMealToFirestore(
+        unpicked_breakfast_options,
+        unpicked_lunch_options,
+        unpicked_dinner_options
+      )
+        .then(() => {
+          setModalIsOpen(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   };
 
