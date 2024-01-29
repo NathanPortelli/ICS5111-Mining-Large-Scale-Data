@@ -1,11 +1,12 @@
+import foundationFoodsJSON from "@/app/data/foundation_foods.json";
 import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
+import stopwordsJSON from "@/app/data/stopwords.json";
 import { AlternativesMealRequestBody } from "@/app/interfaces/alternativesMealRequestBody";
 import { FoodMenuItem } from "@/app/interfaces/foodMenuItem";
-import { getAllData } from "@/app/utils/firebaseUtil";
 import { errorResponse, okResponse } from "@/app/utils/responses";
 import {
   removeWordsFromSentence,
-  splitSentencesIntoWords
+  splitSentencesIntoWords,
 } from "@/app/utils/textUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
 
@@ -21,19 +22,19 @@ interface JORecipe {
 }
 
 function chooseThreeRandomRecipes(arr: JORecipe[]): JORecipe[] {
-    if (arr.length <= 3) {
-      return arr;
-    } else {
-      const randomIndices: number[] = [];
-      while (randomIndices.length < 3) {
-        const randomIndex = Math.floor(Math.random() * arr.length);
-        if (!randomIndices.includes(randomIndex)) {
-          randomIndices.push(randomIndex);
-        }
+  if (arr.length <= 3) {
+    return arr;
+  } else {
+    const randomIndices: number[] = [];
+    while (randomIndices.length < 3) {
+      const randomIndex = Math.floor(Math.random() * arr.length);
+      if (!randomIndices.includes(randomIndex)) {
+        randomIndices.push(randomIndex);
       }
-      return randomIndices.map(index => arr[index]);
     }
+    return randomIndices.map((index) => arr[index]);
   }
+}
 
 export async function POST(request: Request) {
   const { meal_title, calories } =
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
 
   const splitMealTitle = splitSentencesIntoWords([meal_title]);
 
-  const stopWords = (await getAllData("stopwords")).map((word) => word.word);
+  const stopWords: string[] = stopwordsJSON.map((word) => word.word).filter((word): word is string => typeof word === 'string');
 
   let titleWithoutStopWords: string[][] = [];
 
@@ -65,16 +66,14 @@ export async function POST(request: Request) {
     titleWithoutStopWords.push(removeWordsFromSentence(title, stopWords));
   });
 
-  const foodfoundations = await getAllData("foundationfoods");
-
   const word2vec = new Word2Vec();
 
-  foodfoundations.forEach((food) => {
+  foundationFoodsJSON.forEach((food) => {
     word2vec.addWords([food.target, ...food.context]);
   });
 
   for (let epoch = 0; epoch < 100; epoch++) {
-    foodfoundations.forEach((food) => {
+    foundationFoodsJSON.forEach((food) => {
       word2vec.train(food.target, food.context);
     });
   }
@@ -100,7 +99,9 @@ export async function POST(request: Request) {
     }
   );
 
-  const threeRandomRecipes = chooseThreeRandomRecipes(filterJORecipesByUniqueIngredients);
+  const threeRandomRecipes = chooseThreeRandomRecipes(
+    filterJORecipesByUniqueIngredients
+  );
 
   const cleanedRecipes: FoodMenuItem[] = [];
 
@@ -113,5 +114,5 @@ export async function POST(request: Request) {
     });
   });
 
-  return okResponse({alternatives: cleanedRecipes});
+  return okResponse({ alternatives: cleanedRecipes });
 }

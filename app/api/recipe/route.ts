@@ -1,3 +1,5 @@
+import foundationFoodsJSON from "@/app/data/foundation_foods.json";
+import stopwordsJSON from "@/app/data/stopwords.json";
 import { errorResponse, okResponse } from "@/app/utils/responses";
 import { spoonacularBaseAPI } from "@/app/utils/baseSpoonacular";
 import {
@@ -7,7 +9,6 @@ import {
   removeWordsFromSentence,
   splitSentencesIntoWords,
 } from "@/app/utils/textUtil";
-import { getAllData } from "@/app/utils/firebaseUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
 import { NextRequest } from "next/server";
 
@@ -2771,7 +2772,7 @@ export async function GET(request: NextRequest) {
 
     const instructionsToWords = splitSentencesIntoWords(splitInstructions);
 
-    const stopWords = (await getAllData("stopwords")).map((word) => word.word);
+    const stopWords = stopwordsJSON.map((word) => word.word).filter((word): word is string => typeof word === 'string');
 
     let instructionsWithoutStopWords: string[][] = [];
 
@@ -2781,16 +2782,14 @@ export async function GET(request: NextRequest) {
       );
     });
 
-    const foodfoundations = await getAllData("foundationfoods");
-
     const word2vec = new Word2Vec();
 
-    foodfoundations.forEach((food) => {
+    foundationFoodsJSON.forEach((food) => {
       word2vec.addWords([food.target, ...food.context]);
     });
 
     for (let epoch = 0; epoch < 100; epoch++) {
-      foodfoundations.forEach((food) => {
+      foundationFoodsJSON.forEach((food) => {
         word2vec.train(food.target, food.context);
       });
     }

@@ -1,0 +1,101 @@
+[
+  {
+    "target": "dairy_eggs",
+    "context": [
+      "egg",
+      "cheese",
+      "yogurt",
+      "milk",
+      "eggs",
+      "butter",
+      "buttermilk",
+      "cottage",
+      "cream"
+    ]
+  },
+  { "target": "spices_herbs", "context": ["mustard", "salt"] },
+  { "target": "fats_oils", "context": ["oil"] },
+  { "target": "poultry", "context": ["chicken", "turkey"] },
+  { "target": "soups_sauces_gravies", "context": ["sauce"] },
+  {
+    "target": "sausages_luncheon_meats",
+    "context": ["frankfurter", "ham", "sausage"]
+  },
+  {
+    "target": "fruits",
+    "context": [
+      "grapefruit",
+      "peaches",
+      "kiwifruit",
+      "nectarines",
+      "olives",
+      "figs",
+      "melons",
+      "oranges",
+      "pears",
+      "bananas",
+      "apples",
+      "apple",
+      "orange",
+      "grape",
+      "cranberry",
+      "pineapple",
+      "cherries",
+      "strawberries",
+      "raspberries",
+      "blueberries",
+      "grapes",
+      "applesauce"
+    ]
+  },
+  { "target": "pork", "context": ["pork"] },
+  {
+    "target": "vegetables",
+    "context": [
+      "tomatoes",
+      "beans",
+      "kale",
+      "onion",
+      "pickles",
+      "carrots",
+      "lettuce",
+      "broccoli",
+      "ketchup",
+      "onions",
+      "garlic",
+      "mushroom",
+      "mushrooms",
+      "spinach",
+      "tomato",
+      "peppers",
+      "potatoes",
+      "sweet",
+      "celery",
+      "cucumber",
+      "cabbage",
+      "peas"
+    ]
+  },
+  { "target": "nut_seed", "context": ["nuts", "seeds", "sesame", "flaxseed"] },
+  { "target": "beef", "context": ["beef"] },
+  { "target": "beverages", "context": ["almond", "oat"] },
+  { "target": "finfish_shellfish", "context": ["fish"] },
+  {
+    "target": "legumes",
+    "context": [
+      "hummus",
+      "soy",
+      "peanut",
+      "peanuts",
+      "chickpeas",
+      "lentils",
+      "blackeye"
+    ]
+  },
+  { "target": "baked", "context": ["bread", "cookies"] },
+  { "target": "sweets", "context": ["sugars"] },
+  {
+    "target": "cereal_grains_pasta",
+    "context": ["flour", "oats", "buckwheat", "millet", "rice"]
+  }
+]
