@@ -3,6 +3,7 @@ import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
 import stopwordsJSON from "@/app/data/stopwords.json";
 import { AlternativesMealRequestBody } from "@/app/interfaces/alternativesMealRequestBody";
 import { FoodMenuItem } from "@/app/interfaces/foodMenuItem";
+import { JORecipe } from "@/app/interfaces/jamieOliverRecipe";
 import { errorResponse, okResponse } from "@/app/utils/responses";
 import {
   removeWordsFromSentence,
@@ -10,16 +11,7 @@ import {
 } from "@/app/utils/textUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
 
-interface JORecipe {
-  Id: string;
-  Title: string;
-  Calories: number;
-  Calories__1: number;
-  Fat: number;
-  Carbs: number;
-  Image: string;
-  RecipeSteps: string;
-}
+
 
 function chooseThreeRandomRecipes(arr: JORecipe[]): JORecipe[] {
   if (arr.length <= 3) {
