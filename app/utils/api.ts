@@ -5,3 +5,10 @@ export const POST = (url, body) => {
     headers: { "Content-Type": "application/json" },
   });
 };
+
+export const GET = (url) => {
+  return fetch(url, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+};
