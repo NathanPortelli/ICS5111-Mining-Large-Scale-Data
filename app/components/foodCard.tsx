@@ -28,8 +28,8 @@ const FoodCard: FC<FoodCardProps> = ({ id, title, image, calories, selected, alt
           <li key={index}>{ingredient}</li>
         ))}
       </ul> */}
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-gray-700 mb-2">Calories: {calories}</p>
+      <h3 className="text-xl font-semibold mb-1" style={{ minHeight: '3.5rem', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{title}</h3>
+      <p className="text-lg text-gray-700 mb-2">Calories: {calories}</p>
     </div>
   );
 };

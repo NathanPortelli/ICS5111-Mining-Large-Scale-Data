@@ -92,9 +92,9 @@ const Preferences: FC = () => {
       {/* Food Preferences Section */}
       <div className="bg-white p-8 rounded-md shadow-md">
         <p className="mb-4 font-semibold text-gray-800">
-          Please select the type of food you want to eat:
+          Please choose the category of food you would like to eat for each meal:
         </p>
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
           {["Breakfast", "Lunch", "Dinner"].map((meal, index) => (
             <div key={index}>
               <FormControl fullWidth variant="outlined">
@@ -165,6 +165,9 @@ const Preferences: FC = () => {
                         </MenuItem>,
                         <MenuItem key="wrap" value="wrap">
                           🌯 Wrap
+                        </MenuItem>,
+                        <MenuItem key="bread" value="bread">
+                          🍞 Bread
                         </MenuItem>,
                         <MenuItem key="fish" value="fish">
                           🐟 Fish

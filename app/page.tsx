@@ -14,33 +14,42 @@ export default function Home() {
       <h1 className="mt-8 text-4xl sm:text-6xl mb-6 font-semibold text-center text-white">
         Personalised Diet Recommender
       </h1>
-      <p className="mt-4 mb-2 text-xl ml-9 mr-9 text-white">
-        Todo: Change the below text to a more fitting introduction
+      <p className="mt-4 mb-8 text-2xl ml-9 mr-9 text-white">
+        Welcome to our diet recommendation web app! This platform, created using Next.js Framework, Python and 
+        <a className="text-blue-400" href="https://spoonacular.com/food-api/"> Spoonacular API</a>, provides
+        personalised dietary suggestions tailored to your Body Mass Index (BMI), preferences, dietary goals, 
+        and patterns from similar users.
       </p>
-      <p className="mt-4 mb-8 text-2xl font-semibold ml-9 mr-9 text-white">
-        Welcome to our intelligent diet recommendation web application! Powered
-        by academic panic, this application offers you personalised dietary
-        suggestions based on your BMI, preferences, and similar users’
-        preferences, time permitting.
-      </p>
-
-      <div className="mb-8 ml-9 mr-9 pl-3 pr-3 p-2 border-2 bg-gray-600 rounded-md shadow-md">
-        <p className="text-2xl mb-2 font-semibold text-white">
-          Project Details:
+      <div className="text-lg mb-8 ml-9 mr-9 pl-3 pr-3 p-2 border-2 bg-gray-600 rounded-md shadow-md">
+        <p className="text-2xl mb-4 font-semibold text-white">
+          Project Details
         </p>
-        <p className="text-xl text-white">
-          Title: Utilising Structured and Unstructured Data for Intelligent Diet
+        <p className="text-white">
+          <b>Title:</b> Utilising Structured and Unstructured Data for Intelligent Diet
           Recommendations
         </p>
-        <p className="text-xl text-white">
+        <p className="text-white">
           Created in fulfillment of the requirements for the ICS5111 Mining
-          Large Scale Data assignment by: Nathan Portelli and Oleg Grech.
-        </p>
-        <br />
-        <p className="text-xl font-bold text-white">Email:</p>
-        <p className="text-xl mb-5 text-white">
+          Large Scale Data assignment by{" "}
           <a
             className="text-blue-400"
+            href="https://github.com/NathanPortelli/"
+          >
+            Nathan Portelli 
+          </a>
+          {" "}and{" "}  
+          <a
+            className="text-blue-400"
+            href="https://github.com/oleggrech7"
+          >
+            Oleg Grech
+          </a>
+          .
+        </p>
+        <br />
+        <p className="text-white"><b>Email:</b>{" "}
+          <a
+            className="text-blue-400 "
             href="mailto:nathan.portelli.19@um.edu.mt"
           >
             nathan.portelli.19@um.edu.mt
@@ -50,15 +59,48 @@ export default function Home() {
             oleg.grech.19@um.edu.mt
           </a>
         </p>
-        <p className="text-xl font-bold text-white">
-          Full project code available at:
-        </p>
-        <p className="text-xl">
+        <p className="text-white">
+          <b>Full project code available at:{" "}</b>
           <a
             className="text-blue-400"
             href="https://github.com/NathanPortelli/ICS5111-Mining-Large-Scale-Data"
           >
             github.com/NathanPortelli/ICS5111-Mining-Large-Scale-Data
+          </a>
+        </p>
+        <p className="font-bold text-white mt-4">
+          Public Datasets/Websites used:
+        </p>
+        <p className="text-xl">
+          <a
+            className="text-blue-400"
+            href="https://fdc.nal.usda.gov/"
+          >
+            FoodData Central
+          </a>
+        </p>
+        <p className="text-xl">
+          <a
+            className="text-blue-400"
+            href="https://www.jamieoliver.com/recipes/"
+          >
+            Jamie Oliver Recipes
+          </a>
+        </p>
+        <p className="text-xl">
+          <a
+            className="text-blue-400"
+            href="https://spoonacular.com/"
+          >
+            Spoonacular
+          </a>
+        </p>
+        <p className="text-xl">
+          <a
+            className="text-blue-400"
+            href="https://www.kaggle.com/datasets/heeraldedhia/stop-words-in-28-languages?select=english.txt"
+          >
+            Stopwords
           </a>
         </p>
       </div>

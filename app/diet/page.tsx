@@ -198,11 +198,7 @@ const Recommender = () => {
               <p className="text-xl ml-1 text-white mb-5">
                 Options for: <b>{submitKcal} kcal</b>
               </p>
-              <div className="border-2 bg-gray-600 rounded-md shadow-md">
-                <div className="p-5 justify-center">
-                  <FoodMenu submitKcal={submitKcal} />
-                </div>
-              </div>
+              <FoodMenu submitKcal={submitKcal} />
             </div>
           )}
         </>

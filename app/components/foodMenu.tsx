@@ -60,14 +60,15 @@ const MenuSection: FC<MenuSectionProps> = ({
     default:
       backgroundColorClass = "bg-gray-200";
   }
-  const menuClass = `mt-8 ${backgroundColorClass} p-6 rounded-md shadow-md`;
 
   return (
-    <div className={menuClass}>
+    <div className="p-6 mb-5 rounded-md shadow-md border-2 bg-gray-600 rounded-md shadow-md">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+        <div className={`gap-8 mb-4 w-full text-center rounded-md shadow-md ${backgroundColorClass}`}>
+          <h3 className= "mt-3 text-2xl font-bold mb-3 text-black">
           {title} Menu
-        </h2>
+          </h3>
+        </div>
       </div>
       {items && items.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -115,7 +116,6 @@ const MenuSection: FC<MenuSectionProps> = ({
           <h3 className="text-xl font-semibold mt-3 mb-2 text-green-700">
             Alternative Menu Options for {selectedFoodName(mealType)}:
           </h3>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {altItems && altItems?.length > 0 ? (
               <>
@@ -434,15 +434,17 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
         }}
       />
       {/* Shown only if all 3 meals selected */}
-      {allMenusSelected && (
-        <button
-          className="font-bold text-xl w-full mt-6 mb-3 bg-green-500 text-white px-4 py-2 rounded-md transition duration-300 hover:opacity-70"
-          onClick={handleSetMenu}
-        >
-          Set Menu for Day
-        </button>
-      )}
-
+      <button
+        className={`font-bold text-xl w-full mt-6 mb-3 px-4 py-2 rounded-md transition duration-300 ${
+          allMenusSelected ? "bg-green-500 text-white hover:opacity-70" : "bg-gray-400 text-gray-600 cursor-not-allowed"
+        }`}
+        onClick={handleSetMenu}
+        disabled={!allMenusSelected}
+      >
+        Set Menu for Day
+      </button>
+      
+      {/* Successful save */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}

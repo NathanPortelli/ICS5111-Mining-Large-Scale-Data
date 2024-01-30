@@ -69,7 +69,7 @@ const PersonalDetails: FC = () => {
             age: data.age,
             height: data.height,
             weight: data.weight,
-            bmi: bmiValue, // Add BMI as a field
+            bmi: bmiValue,
           });
 
           setBMI(bmiValue);
@@ -93,7 +93,7 @@ const PersonalDetails: FC = () => {
   const getWeightStatusColor = (bmi: number | null) => {
     if (bmi === null) return "";
     if (bmi < 18.5) {
-      return "text-blue-500"; // You can replace this with your preferred color
+      return "text-blue-500";
     } else if (bmi >= 18.5 && bmi < 25.0) {
       return "text-green-500";
     } else if (bmi >= 25.0 && bmi < 30.0) {
