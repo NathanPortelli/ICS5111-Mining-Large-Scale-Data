@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { db } from "./../firebase";
 
 import { Snackbar } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import Image from "next/image";
 import { useUser } from "../hooks/user";
@@ -45,8 +46,12 @@ const MealHistory = () => {
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [expandedIngredients, setExpandedIngredients] = useState<{ [date: string]: { [mealType: string]: boolean } }>({});
-  const [expandedInstructions, setExpandedInstructions] = useState<{ [date: string]: { [mealType: string]: boolean } }>({});   
+  const [expandedIngredients, setExpandedIngredients] = useState<{
+    [date: string]: { [mealType: string]: boolean };
+  }>({});
+  const [expandedInstructions, setExpandedInstructions] = useState<{
+    [date: string]: { [mealType: string]: boolean };
+  }>({});
   const [groupedMeals, setGroupedMeals] = useState<{
     [date: string]: GroupMeal[];
   } | null>(null);
@@ -66,7 +71,7 @@ const MealHistory = () => {
       },
     }));
   };
-  
+
   const toggleInstructions = (dateString, mealType) => {
     setExpandedInstructions((prevExpanded) => ({
       ...prevExpanded,
@@ -75,7 +80,7 @@ const MealHistory = () => {
         [mealType]: !prevExpanded[dateString]?.[mealType] ?? false,
       },
     }));
-  };  
+  };
 
   useEffect(() => {
     if (uid) {
@@ -129,7 +134,7 @@ const MealHistory = () => {
     setLoading(true);
     const baseRecipeUrl = "/api/recipe?mealId=";
     const groupedMeals: { [date: string]: GroupMeal[] } = {};
-  
+
     try {
       await Promise.all(
         meals.map(async (meal) => {
@@ -138,13 +143,13 @@ const MealHistory = () => {
             month: "2-digit",
             day: "2-digit",
           });
-  
+
           if (!groupedMeals[dateString]) {
             groupedMeals[dateString] = [];
           }
-  
-          const breakfast = await GET(baseRecipeUrl + meal.breakfast).then((res) =>
-            res.json()
+
+          const breakfast = await GET(baseRecipeUrl + meal.breakfast).then(
+            (res) => res.json()
           );
           const lunch = await GET(baseRecipeUrl + meal.lunch).then((res) =>
             res.json()
@@ -152,7 +157,7 @@ const MealHistory = () => {
           const dinner = await GET(baseRecipeUrl + meal.dinner).then((res) =>
             res.json()
           );
-  
+
           groupedMeals[dateString].push({
             breakfast,
             lunch,
@@ -167,7 +172,7 @@ const MealHistory = () => {
       return groupedMeals;
     }
   };
-  
+
   return (
     <main className="flex flex-col bg-gray-800">
       <section className="mt-8 ml-9 mr-9">
@@ -177,76 +182,106 @@ const MealHistory = () => {
             {Object.keys(groupedMeals).map((dateString, index) => (
               <div key={index} className="">
                 <h2 className="text-2xl text-white mb-4">{dateString}</h2>
-                <div className="flex flex-wrap justify-between">
+                <div className="flex flex-wrap justify-between mb-4">
                   {groupedMeals[dateString].map((meal, mealIndex) => (
-                    <div key={mealIndex} className="w-full md:w mb-4">
-                      <div className="pt-4 mb-4 flex">
-                      {["breakfast", "lunch", "dinner"].map((mealType) => (
-                        <div key={mealType} className="w-full md:w mb-4">
-                          <div className="pt-4 mb-4 flex">
-                            <div
-                              key={mealType}
-                              className="bg-white rounded-md shadow-md mr-6 p-5 flex-grow"
-                            >
-                              <h3 className="text-xl font-semibold mb-1">
-                                {meal[mealType].title}
-                              </h3>
-                              <div className="text-gray-700 mb-2 flex justify-between items-center">
-                                <p>
-                                  {mealType.charAt(0).toUpperCase() + mealType.slice(1)}
-                                </p>
-                                <p className="text-gray-700 mb-2">
-                                  <span role="img" aria-label="Fire Emoji">🔥</span>
-                                  {meal[mealType].calories} kcal
-                                </p>
-                              </div>
-                              <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
-                                <Image
-                                  layout="fill" objectFit="cover"
-                                  src={meal[mealType].image}
-                                  alt={`Image for ${meal[mealType]}`}
-                                  className="mb-2 rounded-md"
-                                  style={{ maxHeight: "200px" }}
-                                />
-                              </div>
-                              {/* Ingredients */}
-                              <div className="w-full mb-2 rounded-md">
-                                <p
-                                  className="text-lg text-white mb-1 mt-2 cursor-pointer bg-blue-500 px-2 py-2 rounded-md"
-                                  onClick={() => toggleIngredients(dateString, mealType)}
-                                >
-                                  Ingredients
-                                </p>
-                                {expandedIngredients[dateString] && expandedIngredients[dateString][mealType] && (
-                                  <div className="pl-2">
-                                    {meal[mealType].ingredients.map((ingredient, index) => (
-                                      <li key={index}>{ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}</li>
-                                    ))}
+                    <div key={mealIndex} className="w-full">
+                      <div className="flex flex-col lg:flex-row h-full">
+                        {["breakfast", "lunch", "dinner"].map((mealType) => (
+                          <div
+                            key={mealType}
+                            className="w-full h-full mb-4 lg:mb-0"
+                          >
+                            <div className="flex h-full">
+                              <div
+                                key={mealType}
+                                className="bg-white rounded-md shadow-md mr-6 p-5 flex flex-col justify-between flex-grow"
+                              >
+                                <h3 className="text-xl font-semibold mb-1">
+                                  {meal[mealType].title}
+                                </h3>
+                                <div className="bottom-0">
+                                  <div className="text-gray-700 mb-2 flex justify-between items-center">
+                                    <p>
+                                      {mealType.charAt(0).toUpperCase() +
+                                        mealType.slice(1)}
+                                    </p>
+                                    <p className="text-gray-700 mb-2">
+                                      <span role="img" aria-label="Fire Emoji">
+                                        🔥
+                                      </span>
+                                      {meal[mealType].calories} kcal
+                                    </p>
                                   </div>
-                                )}
-                              </div>
-                              {/* Instructions */}
-                              <div className="w-full mb-2 rounded-md">
-                                <p
-                                  className="text-lg text-gray-600 mb-1 mt-2 cursor-pointer bg-gray-300 px-2 py-2 rounded-md"
-                                  onClick={() => toggleInstructions(dateString, mealType)}
-                                >
-                                  Instructions
-                                </p>
-                                {expandedInstructions[dateString] && expandedInstructions[dateString][mealType] && (
-                                  <div className="mb-4 px-2 py-2">
-                                    <ol className="list-decimal pl-4">
-                                      {meal[mealType].instructions.full.split('. ').map((instruction, index) => (
-                                        <li key={index}>{instruction}</li>
-                                      ))}
-                                    </ol>
+                                  <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
+                                    <Image
+                                      layout="fill"
+                                      objectFit="cover"
+                                      src={meal[mealType].image}
+                                      alt={`Image for ${meal[mealType].title}`}
+                                      className="mb-2 rounded-md border-2 border-gray-100"
+                                      style={{ width: "100%", height: "100%" }}
+                                    />
                                   </div>
-                                )}
+                                  {/* Ingredients */}
+                                  <div className="w-full mb-2 rounded-md">
+                                    <p
+                                      className="text-lg text-white mb-1 mt-2 cursor-pointer bg-blue-500 px-2 py-2 rounded-md"
+                                      onClick={() =>
+                                        toggleIngredients(dateString, mealType)
+                                      }
+                                    >
+                                      Ingredients
+                                    </p>
+                                    {expandedIngredients[dateString] &&
+                                      expandedIngredients[dateString][
+                                        mealType
+                                      ] && (
+                                        <div className="pl-2">
+                                          {meal[mealType].ingredients.map(
+                                            (ingredient, index) => (
+                                              <li key={index}>
+                                                {ingredient
+                                                  .charAt(0)
+                                                  .toUpperCase() +
+                                                  ingredient.slice(1)}
+                                              </li>
+                                            )
+                                          )}
+                                        </div>
+                                      )}
+                                  </div>
+                                  {/* Instructions */}
+                                  <div className="w-full mb-2 rounded-md">
+                                    <p
+                                      className="text-lg text-gray-600 mb-1 mt-2 cursor-pointer bg-gray-300 px-2 py-2 rounded-md"
+                                      onClick={() =>
+                                        toggleInstructions(dateString, mealType)
+                                      }
+                                    >
+                                      Instructions
+                                    </p>
+                                    {expandedInstructions[dateString] &&
+                                      expandedInstructions[dateString][
+                                        mealType
+                                      ] && (
+                                        <div className="mb-4 px-2 py-2">
+                                          <ol className="list-decimal pl-4">
+                                            {meal[mealType].instructions.full
+                                              .split(". ")
+                                              .map((instruction, index) => (
+                                                <li key={index}>
+                                                  {instruction}
+                                                </li>
+                                              ))}
+                                          </ol>
+                                        </div>
+                                      )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                       </div>
                     </div>
                   ))}
@@ -255,7 +290,9 @@ const MealHistory = () => {
             ))}
           </>
         ) : (
-          "Loading"
+          <div className="h-full grid place-items-center">
+            <CircularProgress />
+          </div>
         )}
       </section>
       {/* Snackbar for displaying errors */}
