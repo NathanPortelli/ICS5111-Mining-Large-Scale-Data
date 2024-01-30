@@ -45,6 +45,8 @@ const MealHistory = () => {
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [expandedIngredients, setExpandedIngredients] = useState<{ [date: string]: { [mealType: string]: boolean } }>({});
+  const [expandedInstructions, setExpandedInstructions] = useState<{ [date: string]: { [mealType: string]: boolean } }>({});   
   const [groupedMeals, setGroupedMeals] = useState<{
     [date: string]: GroupMeal[];
   } | null>(null);
@@ -54,6 +56,26 @@ const MealHistory = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+
+  const toggleIngredients = (dateString, mealType) => {
+    setExpandedIngredients((prevExpanded) => ({
+      ...prevExpanded,
+      [dateString]: {
+        ...prevExpanded[dateString],
+        [mealType]: !prevExpanded[dateString]?.[mealType] ?? false,
+      },
+    }));
+  };
+  
+  const toggleInstructions = (dateString, mealType) => {
+    setExpandedInstructions((prevExpanded) => ({
+      ...prevExpanded,
+      [dateString]: {
+        ...prevExpanded[dateString],
+        [mealType]: !prevExpanded[dateString]?.[mealType] ?? false,
+      },
+    }));
+  };  
 
   useEffect(() => {
     if (uid) {
@@ -107,84 +129,124 @@ const MealHistory = () => {
     setLoading(true);
     const baseRecipeUrl = "/api/recipe?mealId=";
     const groupedMeals: { [date: string]: GroupMeal[] } = {};
-
+  
     try {
-      meals.forEach(async (meal) => {
-        const dateString = meal.date.toDate().toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        });
-
-        if (!groupedMeals[dateString]) {
-          groupedMeals[dateString] = [];
-        }
-
-        const breakfast = (await GET(baseRecipeUrl + meal.breakfast)).json();
-        const lunch = (await GET(baseRecipeUrl + meal.lunch)).json();
-        const dinner = (await GET(baseRecipeUrl + meal.dinner)).json();
-
-        await Promise.all([breakfast, lunch, dinner]).then((values) => {
-          groupedMeals[dateString].push({
-            breakfast: values[0],
-            lunch: values[1],
-            dinner: values[2],
+      await Promise.all(
+        meals.map(async (meal) => {
+          const dateString = meal.date.toDate().toLocaleDateString("en-GB", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
           });
-        });
-      });
+  
+          if (!groupedMeals[dateString]) {
+            groupedMeals[dateString] = [];
+          }
+  
+          const breakfast = await GET(baseRecipeUrl + meal.breakfast).then((res) =>
+            res.json()
+          );
+          const lunch = await GET(baseRecipeUrl + meal.lunch).then((res) =>
+            res.json()
+          );
+          const dinner = await GET(baseRecipeUrl + meal.dinner).then((res) =>
+            res.json()
+          );
+  
+          groupedMeals[dateString].push({
+            breakfast,
+            lunch,
+            dinner,
+          });
+        })
+      );
     } catch (error) {
       console.log("Error fetching recipe: ", error.message);
     } finally {
+      setLoading(false);
       return groupedMeals;
     }
   };
-
+  
   return (
     <main className="flex flex-col bg-gray-800">
       <section className="mt-8 ml-9 mr-9">
         <h1 className="text-4xl font-semibold text-white mb-6">Meal History</h1>
-        {!loading && groupedMeals && Object.keys(groupedMeals).length > 0 ? (
+        {groupedMeals && Object.keys(groupedMeals).length > 0 ? (
           <>
             {Object.keys(groupedMeals).map((dateString, index) => (
-              <div key={index} className="mb-8">
+              <div key={index} className="">
                 <h2 className="text-2xl text-white mb-4">{dateString}</h2>
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap justify-between">
                   {groupedMeals[dateString].map((meal, mealIndex) => (
-                    <div key={mealIndex}>
+                    <div key={mealIndex} className="w-full md:w mb-4">
                       <div className="pt-4 mb-4 flex">
-                        {["breakfast", "lunch", "dinner"].map((mealType) => (
-                          <div
-                            key={mealType}
-                            className="bg-white rounded-md shadow-md mr-6 p-5 flex-grow"
-                          >
-                            <h3 className="text-lg font-semibold mb-2">
-                              {meal[mealType].title}
-                            </h3>
-                            <div className="text-gray-700 mb-2">
-                              <p>
-                                {mealType.charAt(0).toUpperCase() +
-                                  mealType.slice(1)}
-                              </p>
+                      {["breakfast", "lunch", "dinner"].map((mealType) => (
+                        <div key={mealType} className="w-full md:w mb-4">
+                          <div className="pt-4 mb-4 flex">
+                            <div
+                              key={mealType}
+                              className="bg-white rounded-md shadow-md mr-6 p-5 flex-grow"
+                            >
+                              <h3 className="text-xl font-semibold mb-1">
+                                {meal[mealType].title}
+                              </h3>
+                              <div className="text-gray-700 mb-2 flex justify-between items-center">
+                                <p>
+                                  {mealType.charAt(0).toUpperCase() + mealType.slice(1)}
+                                </p>
+                                <p className="text-gray-700 mb-2">
+                                  <span role="img" aria-label="Fire Emoji">🔥</span>
+                                  {meal[mealType].calories} kcal
+                                </p>
+                              </div>
+                              <div className="relative w-full h-48 mb-4 rounded-md overflow-hidden">
+                                <Image
+                                  layout="fill" objectFit="cover"
+                                  src={meal[mealType].image}
+                                  alt={`Image for ${meal[mealType]}`}
+                                  className="mb-2 rounded-md"
+                                  style={{ maxHeight: "200px" }}
+                                />
+                              </div>
+                              {/* Ingredients */}
+                              <div className="w-full mb-2 rounded-md">
+                                <p
+                                  className="text-lg text-white mb-1 mt-2 cursor-pointer bg-blue-500 px-2 py-2 rounded-md"
+                                  onClick={() => toggleIngredients(dateString, mealType)}
+                                >
+                                  Ingredients
+                                </p>
+                                {expandedIngredients[dateString] && expandedIngredients[dateString][mealType] && (
+                                  <div className="pl-2">
+                                    {meal[mealType].ingredients.map((ingredient, index) => (
+                                      <li key={index}>{ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}</li>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              {/* Instructions */}
+                              <div className="w-full mb-2 rounded-md">
+                                <p
+                                  className="text-lg text-gray-600 mb-1 mt-2 cursor-pointer bg-gray-300 px-2 py-2 rounded-md"
+                                  onClick={() => toggleInstructions(dateString, mealType)}
+                                >
+                                  Instructions
+                                </p>
+                                {expandedInstructions[dateString] && expandedInstructions[dateString][mealType] && (
+                                  <div className="mb-4 px-2 py-2">
+                                    <ol className="list-decimal pl-4">
+                                      {meal[mealType].instructions.full.split('. ').map((instruction, index) => (
+                                        <li key={index}>{instruction}</li>
+                                      ))}
+                                    </ol>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <Image
-                              width={200}
-                              height={300}
-                              src={meal[mealType].image}
-                              alt={`Image for ${meal[mealType]}`}
-                              className="mb-2 rounded-md"
-                              style={{ maxHeight: "200px" }}
-                            />
-                            <p className="text-gray-700 mb-2">
-                              Calories: {meal[mealType].calories} Test
-                            </p>
-                            <p className="text-gray-700 mb-2">
-                              Instructions: {meal[mealType].instructions.full}
-                            </p>
-                            <p className="text-gray-700 mb-2">
-                              Ingredients: {meal[mealType].ingredients}
-                            </p>
                           </div>
-                        ))}
+                        </div>
+                      ))}
                       </div>
                     </div>
                   ))}
