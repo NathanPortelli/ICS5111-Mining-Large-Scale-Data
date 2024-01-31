@@ -5,7 +5,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "./../firebase";
 
 import { Snackbar } from "@mui/material";
-import { useUser } from "../hooks/user";
+import { UserAuth } from "../context/AuthContext";
 
 const PersonalDetails: FC = () => {
   const handleSnackbarClose = () => {
@@ -26,18 +26,18 @@ const PersonalDetails: FC = () => {
   const [bmi, setBMI] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { uid, user } = useUser();
+  const { userData } = UserAuth();
 
   useEffect(() => {    
-    if (user) {
-      setValue("gender", user.gender || "");
-      setValue("age", user.age || 0);
-      setValue("height", user.height || 0);
-      setValue("weight", user.weight || 0);
-      setBMI(user.bmi || null);
+    if (userData) {
+      setValue("gender", userData.gender || "");
+      setValue("age", userData.age || 0);
+      setValue("height", userData.height || 0);
+      setValue("weight", userData.weight || 0);
+      setBMI(userData.bmi || null);
     }
     setLoading(false);
-  }, [user, setValue]);
+  }, [userData, setValue]);
 
   const getWeightStatus = (bmi: number | null) => {
     if (bmi === null) return "";
@@ -55,8 +55,8 @@ const PersonalDetails: FC = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      if (uid) {
-        const userDocRef = doc(db, "users", uid);
+      if (userData) {
+        const userDocRef = doc(db, "users", userData.uid);
 
         try {
           // Calculate BMI

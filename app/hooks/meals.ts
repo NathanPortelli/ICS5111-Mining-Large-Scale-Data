@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
+import { UserAuth } from "../context/AuthContext";
 import { MealsAPIResponse } from "../interfaces/mealsAPIResponse";
 import { POST } from "../utils/api";
-import { useUser } from "./user";
-import { AlternativesMealsAPIResponse } from "../interfaces/alternativesMealsAPIResponse";
-import { set } from "firebase/database";
 
 export function useMeals(totalCalories: number = 1500) {
-  const { user } = useUser();
+  const { userData } = UserAuth();
   const [meals, setMeals] = useState<MealsAPIResponse | null>(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!userData) return;
     getMeals(totalCalories);
-  }, [user, totalCalories]);
+  }, [userData, totalCalories]);
 
   const getMeals = async (total_calories: number) => {
-    const { prefBreakfast, prefLunch, prefDinner } = user!;
+    const { prefBreakfast, prefLunch, prefDinner } = userData!;
 
     await POST("/api/meals", {
       meals: {

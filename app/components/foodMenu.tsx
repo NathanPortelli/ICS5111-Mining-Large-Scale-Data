@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, use, useEffect, useState } from "react";
 import Modal from "react-modal";
 import FoodCard from "./foodCard";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -7,10 +7,10 @@ import { collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 import { useMeals } from "../hooks/meals";
-import { useUser } from "../hooks/user";
 import { AlternativesMealsAPIResponse } from "../interfaces/alternativesMealsAPIResponse";
 import { FoodMenuItem } from "../interfaces/foodMenuItem";
 import StarRating from "./starRating";
+import { UserAuth } from "../context/AuthContext";
 
 interface MenuSectionProps {
   title: string;
@@ -63,7 +63,7 @@ const MenuSection: FC<MenuSectionProps> = ({
   }
 
   return (
-    <div className="p-6 mb-5 rounded-md shadow-md border-2 bg-gray-600 rounded-md shadow-md">
+    <div className="p-6 mb-5 rounded-md shadow-md border-2 bg-gray-600 ">
       <div className="flex justify-between items-center">
         <div className={`gap-8 mb-4 w-full text-center rounded-md shadow-md ${backgroundColorClass}`}>
           <h3 className= "mt-3 text-2xl font-bold mb-3 text-black">
@@ -204,7 +204,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
   const [userRating, setUserRating] = useState<number>(0);
 
   const { meals, getAlternativeMeals } = useMeals(submitKcal);
-  const { uid } = useUser();
+  const { userData } = UserAuth();
 
   const handleFindAlternatives = (mealType: string) => {
     setSelectedMealTypeForAlternatives(mealType);
@@ -279,15 +279,15 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
     userRating // Receive the user rating here
   ) => {
     const currentTime = new Date();
-    if (uid) {
+    if (userData) {
       const mealHistoryCollection = collection(db, "mealHistory");
       const mealHistoryDoc = doc(
         mealHistoryCollection,
-        `${uid}_${currentTime}`
+        `${userData.uid}_${currentTime}`
       );
   
       await setDoc(mealHistoryDoc, {
-        uid: uid,
+        uid: userData.uid,
         date: currentTime,
         breakfast: selectedBreakfast || null,
         lunch: selectedLunch || null,

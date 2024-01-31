@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 import {
   FormControl,
@@ -11,7 +11,7 @@ import {
   Select,
   Snackbar,
 } from "@mui/material";
-import { useUser } from "../hooks/user";
+import { UserAuth } from "../context/AuthContext";
 
 interface FormValues {
   prefBreakfast: string;
@@ -32,7 +32,7 @@ const Preferences: FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { uid, user } = useUser();
+  const { userData } = UserAuth();
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -47,9 +47,9 @@ const Preferences: FC = () => {
 
   const handleChangePreferences: SubmitHandler<FormValues> = async (data) => {
     try {
-      if (uid) {
-        const userDocRef = doc(db, "users", uid);
-        const { prefBreakfast, prefLunch, prefDinner } = user || {};
+      if (userData) {
+        const userDocRef = doc(db, "users", userData.uid);
+        const { prefBreakfast, prefLunch, prefDinner } = userData || {};
 
         await updateDoc(userDocRef, {
           prefBreakfast: data.prefBreakfast || prefBreakfast,
@@ -70,8 +70,8 @@ const Preferences: FC = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      const { prefBreakfast, prefLunch, prefDinner } = user || {};
+    if (userData) {
+      const { prefBreakfast, prefLunch, prefDinner } = userData || {};
       setTemporaryPreferences({
         prefBreakfast: prefBreakfast || "",
         prefLunch: prefLunch || "",
@@ -81,7 +81,7 @@ const Preferences: FC = () => {
       setShowSelectedPreferences(true);
     }
     setLoading(false);
-  }, [user]);
+  }, [userData]);
 
   if (loading) {
     return <p className="text-white">Loading...</p>;

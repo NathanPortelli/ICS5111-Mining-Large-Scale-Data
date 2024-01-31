@@ -1,23 +1,21 @@
-'use client'
+"use client";
 
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import { auth, db } from './../firebase';
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { auth, db } from "./../firebase";
 
-import { Snackbar } from '@mui/material';
-import PreferenceAllergies from '../components/preferencesAllergies';
-import PersonalDetails from './../components/personalDetails';
-import Preferences from './../components/preferences';
-
-import withAuth from './../withAuth';
+import { Snackbar } from "@mui/material";
+import PreferenceAllergies from "../components/preferencesAllergies";
+import PersonalDetails from "./../components/personalDetails";
+import Preferences from "./../components/preferences";
 
 
 const Account = () => {
   const uid = auth.currentUser?.uid;
-  const [currentTab, setCurrentTab] = useState('account');
+  const [currentTab, setCurrentTab] = useState("account");
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -25,14 +23,14 @@ const Account = () => {
 
   const handleUpdateDetails = async () => {
     if (uid) {
-      const userDocRef = doc(db, 'users', uid);
+      const userDocRef = doc(db, "users", uid);
 
       try {
         await updateDoc(userDocRef, { name });
-        setError('User details updated successfully');
+        setError("User details updated successfully");
         setSnackbarOpen(true);
       } catch (error) {
-        setError('Error updating user details: ' + error.message);
+        setError("Error updating user details: " + error.message);
         setSnackbarOpen(true);
       }
     }
@@ -41,12 +39,12 @@ const Account = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (uid) {
-        const userDocRef = doc(db, 'users', uid);
+        const userDocRef = doc(db, "users", uid);
         const userDocSnapshot = await getDoc(userDocRef);
 
         if (userDocSnapshot.exists()) {
           const userData = userDocSnapshot.data();
-          setName(userData.name || '');
+          setName(userData.name || "");
         }
       }
     };
@@ -59,36 +57,47 @@ const Account = () => {
         <div className="flex">
           <button
             className={`flex-1 px-6 pt-3 pb-2 text-center font-semibold rounded-tl-lg ${
-              currentTab === 'account' ? 'bg-blue-500 text-white' : 'bg-gray-300'
+              currentTab === "account"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300"
             }`}
-            onClick={() => setCurrentTab('account')}
+            onClick={() => setCurrentTab("account")}
           >
             Account Details
           </button>
           <button
             className={`flex-1 px-6 pt-3 pb-2 text-center font-semibold ${
-              currentTab === 'personal' ? 'bg-blue-500 text-white' : 'bg-gray-300'
+              currentTab === "personal"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300"
             }`}
-            onClick={() => setCurrentTab('personal')}
+            onClick={() => setCurrentTab("personal")}
           >
             Personal Details
           </button>
           <button
             className={`flex-1 px-6 pt-3 pb-2 text-center font-semibold rounded-tr-lg ${
-              currentTab === 'preferences' ? 'bg-blue-500 text-white' : 'bg-gray-300'
+              currentTab === "preferences"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-300"
             }`}
-            onClick={() => setCurrentTab('preferences')}
+            onClick={() => setCurrentTab("preferences")}
           >
             Preferences
           </button>
         </div>
 
-        {currentTab === 'account' && (
+        {currentTab === "account" && (
           <div className="mb-8 bg-white p-6 rounded-md shadow-md">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Account Details</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+              Account Details
+            </h2>
             <form>
               <div className="mb-4">
-                <label htmlFor="name" className="block mb-2 font-semibold text-gray-800">
+                <label
+                  htmlFor="name"
+                  className="block mb-2 font-semibold text-gray-800"
+                >
                   Name:
                 </label>
                 <input
@@ -110,22 +119,25 @@ const Account = () => {
           </div>
         )}
 
-        {currentTab === 'personal' && (
+        {currentTab === "personal" && (
           <div className="mb-8 bg-white p-6 rounded-md shadow-md">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Personal Details</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+              Personal Details
+            </h2>
             <form>
               <PersonalDetails />
             </form>
           </div>
         )}
 
-        {currentTab === 'preferences' && (
+        {currentTab === "preferences" && (
           <div className="bg-white p-6 rounded-md shadow-md">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-3">Preferences</h2>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+              Preferences
+            </h2>
             <form>
               <Preferences />
               <PreferenceAllergies />
-
             </form>
           </div>
         )}
@@ -135,10 +147,10 @@ const Account = () => {
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
-        message={error || ''}
+        message={error || ""}
       />
     </main>
   );
 };
 
-export default withAuth(Account);
+export default Account;

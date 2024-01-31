@@ -7,7 +7,7 @@ import { auth } from "./../firebase";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useLocalStorage } from "../hooks/localStorage";
-import { useUser } from "../hooks/user";
+import { UserAuth } from "../context/AuthContext";
 
 const Header = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNavBar, setShowNavBar] = useState(false);
   const { remove } = useLocalStorage();
-  const { user } = useUser();
+  const { user, userData } = UserAuth();
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
@@ -25,7 +25,6 @@ const Header = () => {
     try {
       await auth.signOut();
       remove("userId");
-      toggleDropdown();
       router.push("/credentials"); // Redirect to the credentials page after logout
     } catch (error) {
       console.error("Error during logout:", error);
@@ -33,12 +32,12 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if ((pathname !== "/credentials" && user) || (pathname === "/")) {
-        setShowNavBar(true);
+    if ((pathname !== "/credentials" && userData) || pathname === "/") {
+      setShowNavBar(true);
     } else {
       setShowNavBar(false);
     }
-  }, [pathname, user]);
+  }, [pathname, userData]);
 
   return (
     <>
@@ -84,10 +83,10 @@ const Header = () => {
               <div className="flex items-center space-x-2 cursor-pointer">
                 <p
                   className={`font-semibold mr-2 ${
-                    user?.name ? "hidden md:flex" : ""
+                    userData?.name ? "hidden md:flex" : ""
                   }`}
                 >
-                  {user?.name}
+                  {userData?.name}
                 </p>
                 <FaUser className="text-2xl" />
               </div>
@@ -96,13 +95,13 @@ const Header = () => {
               <div className="absolute top-10 right-0 bg-white text-black rounded shadow-md p-2">
                 {user ? (
                   <>
-                    <Link href="/account">
+                    <Link href="/account" onClick={() => toggleDropdown()}>
                       <div className="flex items-center space-x-2 cursor-pointer">
                         <FaCog />
                         <span>Account</span>
                       </div>
                     </Link>
-                    <Link href="/credentials">
+                    <Link href="/credentials" onClick={() => toggleDropdown()}>
                       <div
                         className="flex items-center space-x-2 cursor-pointer"
                         onClick={handleLogout}

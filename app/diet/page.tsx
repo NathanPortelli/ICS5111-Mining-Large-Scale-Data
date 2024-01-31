@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 
+import PreferenceAllegries from "../components/preferencesAllergies";
 import FoodMenu from "./../components/foodMenu";
 import PersonalDetails from "./../components/personalDetails";
 import Preferences from "./../components/preferences";
-import PreferenceAllegries from "../components/preferencesAllergies";
 
 import CircularProgress from "@mui/material/CircularProgress";
-import { useUser } from "../hooks/user";
-import withAuth from "./../withAuth";
+import { UserAuth } from "../context/AuthContext";
 
 const Recommender = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -19,7 +18,7 @@ const Recommender = () => {
   const [submitKcal, setSubmitKcal] = useState(0); // Kcal submitted to FoodMenu
   const [goal, setGoal] = useState("");
 
-  const { user } = useUser();
+  const { userData } = UserAuth();
 
   const onSubmit = () => {
     setShowFoodMenu(false);
@@ -35,11 +34,11 @@ const Recommender = () => {
 
     // Calculate BMR -- Based on: https://mohap.gov.ae/en/more/awareness-center/calories-calculation
     let bmr = 0;
-    if (user) {
-      if (user.gender === "male") {
-        bmr = 10 * user.weight + 6.25 * user.height - 5 * user.age + 5;
+    if (userData) {
+      if (userData.gender === "male") {
+        bmr = 10 * userData.weight + 6.25 * userData.height - 5 * userData.age + 5;
       } else {
-        bmr = 10 * user.weight + 6.25 * user.height - 5 * user.age - 161;
+        bmr = 10 * userData.weight + 6.25 * userData.height - 5 * userData.age - 161;
       }
     }
 
@@ -58,11 +57,11 @@ const Recommender = () => {
         setCustomKcal((prevCustomKcal) => Math.floor(bmr));
         break;
     }
-  };
+  };  
 
   return (
     <main className="flex flex-col bg-gray-800">
-      {user ? (
+      {userData ? (
         <>
           <h1 className="mt-8 text-4xl sm:text-6xl font-semibold text-white mb-6 text-center">
             Personalised Diet Recommender
@@ -220,4 +219,4 @@ const Recommender = () => {
   );
 };
 
-export default withAuth(Recommender);
+export default Recommender;
