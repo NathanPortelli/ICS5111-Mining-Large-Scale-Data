@@ -5,10 +5,11 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, use, useContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { FirestoreUser } from "../interfaces/firestoreUser";
 import { useLocalStorage } from "../hooks/localStorage";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,7 +19,7 @@ const AuthContext = createContext({} as any);
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<FirestoreUser | null>(null);
-  const { get, set } = useLocalStorage();
+  const { get, set, remove } = useLocalStorage();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -31,11 +32,36 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (name: string, email: string, password: string) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      // Reference to the 'users' collection
+      const usersCollection = collection(db, "users");
+      // Create a new document in the 'users' collection
+      const userDoc = doc(usersCollection, auth.currentUser?.uid);
+      // Set user details in the document
+      await setDoc(userDoc, {
+        admin: false,
+        age: 0,
+        email,
+        name,
+        gender: 0,
+        height: 0,
+        weight: 0,
+        bmi: 0,
+      });
+
       setUser(auth.currentUser);
-      return auth.currentUser;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      remove("userId");
+      router.push("/credentials");
     } catch (error) {
       throw new Error(error.message);
     }
@@ -46,7 +72,6 @@ export const AuthContextProvider = ({ children }) => {
       if (currentUser !== null) {
         setUser(currentUser);
         set("userId", currentUser.uid);
-        fetchUserData();
       } else if (pathname == "/") {
         return;
       } else {
@@ -55,6 +80,12 @@ export const AuthContextProvider = ({ children }) => {
     });
     return () => unsubscribe();
   }, [user, router, set, pathname]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
 
   const fetchUserData = async () => {
     try {
@@ -74,7 +105,7 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, userData, signIn, signUp }}>
+    <AuthContext.Provider value={{ user, userData, signIn, signUp, logout }}>
       {children}
     </AuthContext.Provider>
   );

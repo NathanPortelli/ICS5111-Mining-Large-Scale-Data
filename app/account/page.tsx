@@ -8,22 +8,22 @@ import { Snackbar } from "@mui/material";
 import PreferenceAllergies from "../components/preferencesAllergies";
 import PersonalDetails from "./../components/personalDetails";
 import Preferences from "./../components/preferences";
-
+import { UserAuth } from "../context/AuthContext";
 
 const Account = () => {
-  const uid = auth.currentUser?.uid;
   const [currentTab, setCurrentTab] = useState("account");
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [name, setName] = useState("");
+  const { user, userData } = UserAuth();
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
   const handleUpdateDetails = async () => {
-    if (uid) {
-      const userDocRef = doc(db, "users", uid);
+    if (user) {
+      const userDocRef = doc(db, "users", user.uid);
 
       try {
         await updateDoc(userDocRef, { name });
@@ -37,19 +37,10 @@ const Account = () => {
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (uid) {
-        const userDocRef = doc(db, "users", uid);
-        const userDocSnapshot = await getDoc(userDocRef);
-
-        if (userDocSnapshot.exists()) {
-          const userData = userDocSnapshot.data();
-          setName(userData.name || "");
-        }
-      }
-    };
-    fetchUserData();
-  }, [uid]);
+    if (userData) {
+      setName(userData.name || "");
+    }
+  }, [userData]);
 
   return (
     <main className="flex flex-col items-center bg-gray-800">

@@ -46,23 +46,7 @@ const Credentials = () => {
         return;
       }
 
-      const userCredential = await signUp(email, password);
-
-      // Reference to the 'users' collection
-      const usersCollection = collection(db, "users");
-      // Create a new document in the 'users' collection
-      const userDoc = doc(usersCollection, userCredential.uid);
-      // Set user details in the document
-      await setDoc(userDoc, {
-        admin: false,
-        age: 0,
-        email,
-        name,
-        gender: 0,
-        height: 0,
-        weight: 0,
-        bmi: 0,
-      });
+      await signUp(name, email, password);
 
       setError("Registration successful!");
       setSnackbarOpen(true);

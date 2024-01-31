@@ -26,7 +26,7 @@ const PersonalDetails: FC = () => {
   const [bmi, setBMI] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { userData } = UserAuth();
+  const { userData, user } = UserAuth();
 
   useEffect(() => {    
     if (userData) {
@@ -55,8 +55,9 @@ const PersonalDetails: FC = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      if (userData) {
-        const userDocRef = doc(db, "users", userData.uid);
+      
+      if (userData && user) {
+        const userDocRef = doc(db, "users", user.uid);
 
         try {
           // Calculate BMI

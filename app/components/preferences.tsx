@@ -32,7 +32,7 @@ const Preferences: FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { userData } = UserAuth();
+  const { userData, user } = UserAuth();
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -47,8 +47,8 @@ const Preferences: FC = () => {
 
   const handleChangePreferences: SubmitHandler<FormValues> = async (data) => {
     try {
-      if (userData) {
-        const userDocRef = doc(db, "users", userData.uid);
+      if (userData && user) {
+        const userDocRef = doc(db, "users", user.uid);
         const { prefBreakfast, prefLunch, prefDinner } = userData || {};
 
         await updateDoc(userDocRef, {

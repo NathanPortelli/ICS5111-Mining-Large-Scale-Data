@@ -14,8 +14,7 @@ const Header = () => {
   const pathname = usePathname();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNavBar, setShowNavBar] = useState(false);
-  const { remove } = useLocalStorage();
-  const { user, userData } = UserAuth();
+  const { user, userData, logout } = UserAuth();
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
@@ -23,9 +22,7 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
-      remove("userId");
-      router.push("/credentials"); // Redirect to the credentials page after logout
+      await logout();
     } catch (error) {
       console.error("Error during logout:", error);
     }

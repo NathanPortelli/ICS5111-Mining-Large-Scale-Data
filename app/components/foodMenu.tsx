@@ -1,16 +1,16 @@
-import { FC, use, useEffect, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import { FC, useEffect, useState } from "react";
 import Modal from "react-modal";
 import FoodCard from "./foodCard";
-import CircularProgress from "@mui/material/CircularProgress";
 
 import { collection, doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
+import { UserAuth } from "../context/AuthContext";
 import { useMeals } from "../hooks/meals";
 import { AlternativesMealsAPIResponse } from "../interfaces/alternativesMealsAPIResponse";
 import { FoodMenuItem } from "../interfaces/foodMenuItem";
 import StarRating from "./starRating";
-import { UserAuth } from "../context/AuthContext";
 
 interface MenuSectionProps {
   title: string;
@@ -65,9 +65,11 @@ const MenuSection: FC<MenuSectionProps> = ({
   return (
     <div className="p-6 mb-5 rounded-md shadow-md border-2 bg-gray-600 ">
       <div className="flex justify-between items-center">
-        <div className={`gap-8 mb-4 w-full text-center rounded-md shadow-md ${backgroundColorClass}`}>
-          <h3 className= "mt-3 text-2xl font-bold mb-3 text-black">
-          {title} Menu
+        <div
+          className={`gap-8 mb-4 w-full text-center rounded-md shadow-md ${backgroundColorClass}`}
+        >
+          <h3 className="mt-3 text-2xl font-bold mb-3 text-black">
+            {title} Menu
           </h3>
         </div>
       </div>
@@ -204,7 +206,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
   const [userRating, setUserRating] = useState<number>(0);
 
   const { meals, getAlternativeMeals } = useMeals(submitKcal);
-  const { userData } = UserAuth();
+  const { user } = UserAuth();
 
   const handleFindAlternatives = (mealType: string) => {
     setSelectedMealTypeForAlternatives(mealType);
@@ -279,15 +281,15 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
     userRating // Receive the user rating here
   ) => {
     const currentTime = new Date();
-    if (userData) {
+    if (user) {
       const mealHistoryCollection = collection(db, "mealHistory");
       const mealHistoryDoc = doc(
         mealHistoryCollection,
-        `${userData.uid}_${currentTime}`
+        `${user.uid}_${currentTime}`
       );
-  
+
       await setDoc(mealHistoryDoc, {
-        uid: userData.uid,
+        uid: user.uid,
         date: currentTime,
         breakfast: selectedBreakfast || null,
         lunch: selectedLunch || null,
@@ -295,7 +297,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
         unpicked_breakfast_options,
         unpicked_lunch_options,
         unpicked_dinner_options,
-        userRating
+        userRating,
       });
     }
   };
@@ -445,7 +447,9 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
       {/* Star rating section */}
       <div className="flex flex-col justify-center items-center text-lg p-2 border-2 bg-gray-600 rounded-md shadow-md">
         <div className="gap-8 m-2 w-full text-center rounded-md shadow-md bg-white">
-          <p className="text-2xl font-semibold m-2">Rate the food recommendations</p>
+          <p className="text-2xl font-semibold m-2">
+            Rate the food recommendations
+          </p>
         </div>
         <div>
           <StarRating handleRating={handleRating} />
@@ -454,14 +458,16 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
       {/* Available only if all 3 meals selected */}
       <button
         className={`font-bold text-xl w-full mt-6 mb-3 px-4 py-2 rounded-md transition duration-300 ${
-          allMenusSelected ? "bg-green-500 text-white hover:opacity-70" : "bg-gray-400 text-gray-600 cursor-not-allowed"
+          allMenusSelected
+            ? "bg-green-500 text-white hover:opacity-70"
+            : "bg-gray-400 text-gray-600 cursor-not-allowed"
         }`}
         onClick={handleSetMenu}
         disabled={!allMenusSelected}
       >
         Set Menu for Today
       </button>
-      
+
       {/* Successful save */}
       <Modal
         isOpen={modalIsOpen}
