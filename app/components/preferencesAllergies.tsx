@@ -6,8 +6,6 @@ import { db, auth } from '../firebase';
 
 import { Snackbar } from '@mui/material';
 
-// No longer in use -- changed with user preferences on type of food 'preferences.tsx'
-
 const PreferenceAllegries: FC = () => {
   const { register } = useForm();
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
@@ -88,10 +86,9 @@ const PreferenceAllegries: FC = () => {
   }
 
   return (
-    <section className="mb-8">
-      {/* Food Preferences Section */}
+    <section>
       <div className="bg-white p-6 rounded-md shadow-md">
-        <p className="mb-4 font-semibold text-gray-800">Please select your preferences/allergies:</p>
+        <p className="mb-4 font-semibold text-gray-800">Please select your allergies/dietary restrictions:</p>
         <div className="grid grid-cols-2 gap-4 text-gray-800">
           {['Dairy Free', 'Gluten Free', 'Halal', 'Kosher', 'Nut Free', 'Shellfish Free', 'Vegetarian', 'Vegan'].map((preference) => (
             <label key={preference} className="flex items-center">
@@ -106,20 +103,23 @@ const PreferenceAllegries: FC = () => {
             </label>
           ))}
         </div>
+        {showSelectedPreferences && (
+          <p className="mt-4 text-gray-800">
+            <b>Selected:</b><br /> {selectedPreferences.join(', ')}
+          </p>
+        )}
         <div className="mt-6">
           <button
             type="button"
             onClick={handleChangePreferences}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded-md transition duration-300 hover:bg-blue-600"
+            className="w-full px-4 py-2 bg-gray-400 text-white rounded-md transition duration-300 hover:bg-gray-500"
           >
-            Change Preferences
+            Change Restrictions
           </button>
         </div>
-        {showSelectedPreferences && (
-          <p className="mt-4 text-gray-800">
-            <b>Selected Preferences:</b><br /> {selectedPreferences.join(', ')}
-          </p>
-        )}
+        <p className='text-sm pt-5 font-semibold'>
+          Please note that this section is not yet functional, and will therefore not impact the generated meal plan!
+        </p>
       </div>
       {/* Snackbar for displaying errors */}
       <Snackbar

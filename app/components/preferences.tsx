@@ -88,11 +88,10 @@ const Preferences: FC = () => {
   }
 
   return (
-    <section className="mb-8">
-      {/* Food Preferences Section */}
+    <section className="mb-5">
       <div className="bg-white p-8 rounded-md shadow-md">
         <p className="mb-4 font-semibold text-gray-800">
-          Please choose the category of food you would like to eat for each meal:
+          Choose the category of food you would like to eat for each meal:
         </p>
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
           {["Breakfast", "Lunch", "Dinner"].map((meal, index) => (

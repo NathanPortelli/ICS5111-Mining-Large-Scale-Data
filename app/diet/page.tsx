@@ -5,6 +5,7 @@ import { useState } from "react";
 import FoodMenu from "./../components/foodMenu";
 import PersonalDetails from "./../components/personalDetails";
 import Preferences from "./../components/preferences";
+import PreferenceAllegries from "../components/preferencesAllergies";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import { useUser } from "../hooks/user";
@@ -103,6 +104,14 @@ const Recommender = () => {
                   <div className="mx-auto w-full max-w-xl">
                     <Preferences />
                   </div>
+                  <div className="gap-8 w-full text-center bg-black rounded-md shadow-md">
+                    <h3 className="mt-3 text-2xl font-semibold mb-3 text-white">
+                      Food Restrictions
+                    </h3>
+                  </div>
+                  <div className="mx-auto w-full max-w-xl">
+                    <PreferenceAllegries />
+                  </div>
                 </div>
               </div>
             </div>
@@ -173,7 +182,7 @@ const Recommender = () => {
                       className="w-full text-xl font-bold px-4 py-2 bg-green-500 text-white rounded-md transition duration-300 hover:opacity-70 mt-4"
                       onClick={() => onSubmit()}
                     >
-                      Start
+                      Generate Recommendations
                     </button>
                   </div>
                 )}

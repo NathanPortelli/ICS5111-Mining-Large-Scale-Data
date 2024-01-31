@@ -10,6 +10,7 @@ import { useMeals } from "../hooks/meals";
 import { useUser } from "../hooks/user";
 import { AlternativesMealsAPIResponse } from "../interfaces/alternativesMealsAPIResponse";
 import { FoodMenuItem } from "../interfaces/foodMenuItem";
+import StarRating from "./starRating";
 
 interface MenuSectionProps {
   title: string;
@@ -200,12 +201,17 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
   const [alternateDinnerMenuItems, setAlternateDinnerMenuItems] = useState<
     FoodMenuItem[] | null
   >(null);
+  const [userRating, setUserRating] = useState<number>(0);
 
   const { meals, getAlternativeMeals } = useMeals(submitKcal);
   const { uid } = useUser();
 
   const handleFindAlternatives = (mealType: string) => {
     setSelectedMealTypeForAlternatives(mealType);
+  };
+
+  const handleRating = (value: number) => {
+    setUserRating(value);
   };
 
   const handleSelect = (mealType: string, itemId: string | number) => {
@@ -269,7 +275,8 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
   const saveMealToFirestore = async (
     unpicked_breakfast_options,
     unpicked_lunch_options,
-    unpicked_dinner_options
+    unpicked_dinner_options,
+    userRating // Receive the user rating here
   ) => {
     const currentTime = new Date();
     if (uid) {
@@ -278,7 +285,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
         mealHistoryCollection,
         `${uid}_${currentTime}`
       );
-
+  
       await setDoc(mealHistoryDoc, {
         uid: uid,
         date: currentTime,
@@ -288,6 +295,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
         unpicked_breakfast_options,
         unpicked_lunch_options,
         unpicked_dinner_options,
+        userRating
       });
     }
   };
@@ -340,7 +348,8 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
       await saveMealToFirestore(
         unpicked_breakfast_options,
         unpicked_lunch_options,
-        unpicked_dinner_options
+        unpicked_dinner_options,
+        userRating
       )
         .then(() => {
           setModalIsOpen(true);
@@ -433,7 +442,16 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
           }
         }}
       />
-      {/* Shown only if all 3 meals selected */}
+      {/* Star rating section */}
+      <div className="flex flex-col justify-center items-center text-lg p-2 border-2 bg-gray-600 rounded-md shadow-md">
+        <div className="gap-8 m-2 w-full text-center rounded-md shadow-md bg-white">
+          <p className="text-2xl font-semibold m-2">Rate the food recommendations</p>
+        </div>
+        <div>
+          <StarRating handleRating={handleRating} />
+        </div>
+      </div>
+      {/* Available only if all 3 meals selected */}
       <button
         className={`font-bold text-xl w-full mt-6 mb-3 px-4 py-2 rounded-md transition duration-300 ${
           allMenusSelected ? "bg-green-500 text-white hover:opacity-70" : "bg-gray-400 text-gray-600 cursor-not-allowed"
@@ -441,7 +459,7 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
         onClick={handleSetMenu}
         disabled={!allMenusSelected}
       >
-        Set Menu for Day
+        Set Menu for Today
       </button>
       
       {/* Successful save */}
