@@ -1,4 +1,3 @@
-import { get } from "http";
 
 export class Word2Vec {
     vocab: Set<string>;
