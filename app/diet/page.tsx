@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "./../firebase";
 
 import PreferenceAllegries from "../components/preferencesAllergies";
 import FoodMenu from "./../components/foodMenu";
@@ -18,7 +20,8 @@ const Recommender = () => {
   const [submitKcal, setSubmitKcal] = useState(0); // Kcal submitted to FoodMenu
   const [goal, setGoal] = useState("");
 
-  const { userData } = UserAuth();
+  const { user } = UserAuth();
+  const [uid, setUid] = useState(null);
 
   const onSubmit = () => {
     setShowFoodMenu(false);
@@ -28,40 +31,70 @@ const Recommender = () => {
     setShowFoodMenu(true);
   };
 
+  const fetchUserData = async () => {
+    if (user) {
+      if (user && user.uid) {
+        const userDocRef = doc(db, "users", user.uid);
+
+        try {
+          const docSnap = await getDoc(userDocRef);
+          if (docSnap.exists()) {
+            return docSnap.data();
+          } else {
+            console.log("No user data found");
+            return null;
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          throw error;
+        }
+      } else {
+        console.error("userData is null or undefined");
+      }
+    }
+  };
+
   const openDropdown = async (goal) => {
     setShowDropdown(true);
     setGoal(goal);
 
-    // Calculate BMR -- Based on: https://mohap.gov.ae/en/more/awareness-center/calories-calculation
-    let bmr = 0;
-    if (userData) {
-      if (userData.gender === "male") {
-        bmr = 10 * userData.weight + 6.25 * userData.height - 5 * userData.age + 5;
-      } else {
-        bmr = 10 * userData.weight + 6.25 * userData.height - 5 * userData.age - 161;
+    try {
+      // Fetch latest user data
+      const userDetails = await fetchUserData();
+  
+      // Calculate BMR -- Based on: https://mohap.gov.ae/en/more/awareness-center/calories-calculation
+      let bmr = 0;
+      if (userDetails) {
+        if (userDetails.gender === "male") {
+          bmr = 10 * userDetails.weight + 6.25 * userDetails.height - 5 * userDetails.age + 5;
+        } else {
+          bmr = 10 * userDetails.weight + 6.25 * userDetails.height - 5 * userDetails.age - 161;
+        }
       }
-    }
-
-    switch (goal) {
-      case "Weight Loss":
-        setRecommendedKcal(Math.floor(bmr - 500));
-        setCustomKcal((prevCustomKcal) => Math.floor(bmr - 500));
-        break;
-      case "Weight Gain":
-        setRecommendedKcal(Math.floor(bmr + 500));
-        setCustomKcal((prevCustomKcal) => Math.floor(bmr + 500));
-        break;
-      case "Maintain":
-      default:
-        setRecommendedKcal(Math.floor(bmr));
-        setCustomKcal((prevCustomKcal) => Math.floor(bmr));
-        break;
+  
+      switch (goal) {
+        case "Weight Loss":
+          setRecommendedKcal(Math.floor(bmr - 500));
+          setCustomKcal(Math.floor(bmr - 500));
+          break;
+        case "Weight Gain":
+          setRecommendedKcal(Math.floor(bmr + 500));
+          setCustomKcal(Math.floor(bmr + 500));
+          break;
+        case "Maintain":
+        default:
+          setRecommendedKcal(Math.floor(bmr));
+          setCustomKcal(Math.floor(bmr));
+          break;
+      }
+    } catch (error) {
+      console.error("Error fetching user data ", error);
     }
   };  
 
   return (
     <main className="flex flex-col bg-gray-800">
-      {userData ? (
+      {user ? (
         <>
           <h1 className="mt-8 text-4xl sm:text-6xl font-semibold text-white mb-6 text-center">
             Personalised Diet Recommender
