@@ -144,9 +144,7 @@ const MenuSection: FC<MenuSectionProps> = ({
                 ))}
               </>
             ) : altItems && altItems?.length === 0 ? (
-              <div className="flex flex-row justify-center">
-                <h3>No Alternative Results Found.</h3>
-              </div>
+              <h3 className="mb-2">No Alternative Results Found.</h3>
             ) : (
               <div className="flex flex-row justify-center">
                 <CircularProgress />

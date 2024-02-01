@@ -41,67 +41,13 @@ export async function POST(request: Request) {
       } else {
         caloriesPerMeal = total_calories / numberOfMeals;
       }
-      //TO REVERT BEFORE TESTING
 
-      // const spoonacularResponse = await spoonacularBaseAPI(
-      //   `/recipes/complexSearch?query=${mealFood}&maxCalories=${caloriesPerMeal}&minCalories=${
-      //     caloriesPerMeal - 100
-      //   }&number=3`
-      // );
-      // const data = await spoonacularResponse.json();
-
-      const data = {
-        results: [
-          {
-            id: 638174,
-            title: "Chicken Lo Mein",
-            image: "https://spoonacular.com/recipeImages/638174-312x231.jpg",
-            imageType: "jpg",
-            nutrition: {
-              nutrients: [
-                {
-                  name: "Calories",
-                  amount: 401.421,
-                  unit: "kcal",
-                },
-              ],
-            },
-          },
-          {
-            id: 638257,
-            title: "Chicken Porridge",
-            image: "https://spoonacular.com/recipeImages/638257-312x231.jpg",
-            imageType: "jpg",
-            nutrition: {
-              nutrients: [
-                {
-                  name: "Calories",
-                  amount: 393.05,
-                  unit: "kcal",
-                },
-              ],
-            },
-          },
-          {
-            id: 638148,
-            title: "Chicken Kale Bake",
-            image: "https://spoonacular.com/recipeImages/638148-312x231.jpg",
-            imageType: "jpg",
-            nutrition: {
-              nutrients: [
-                {
-                  name: "Calories",
-                  amount: 418.427,
-                  unit: "kcal",
-                },
-              ],
-            },
-          },
-        ],
-        offset: 0,
-        number: 3,
-        totalResults: 161,
-      };
+      const spoonacularResponse = await spoonacularBaseAPI(
+        `/recipes/complexSearch?query=${mealFood}&maxCalories=${caloriesPerMeal}&minCalories=${
+          caloriesPerMeal - 100
+        }&number=3`
+      );
+      const data = await spoonacularResponse.json();
 
       const mealData = data.results.map((result) => ({
         id: result.id,
