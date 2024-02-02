@@ -32,7 +32,7 @@ const Preferences: FC = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { userData, user } = UserAuth();
+  const { userData, user, fetchUserData } = UserAuth();
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -64,8 +64,18 @@ const Preferences: FC = () => {
         setSnackbarOpen(true);
       }
     } catch (error) {
-      setError("Error updating preferences: " + error.message);
+      if (!data.prefBreakfast) {
+        setError("Error updating preferences: Breakfast Preference not chosen");
+      } else if (!data.prefLunch) {
+        setError("Error updating preferences: Lunch Preference not chosen");
+      } else if (!data.prefDinner) {
+        setError("Error updating preferences: Dinner Preference not chosen");
+      } else {
+        setError("Error updating preferences: " + error.message);
+      }
       setSnackbarOpen(true);
+    } finally {
+      await fetchUserData();
     }
   };
 

@@ -26,9 +26,9 @@ const PersonalDetails: FC = () => {
   const [bmi, setBMI] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { userData, user } = UserAuth();
+  const { userData, user, fetchUserData } = UserAuth();
 
-  useEffect(() => {    
+  useEffect(() => {
     if (userData) {
       setValue("gender", userData.gender || "");
       setValue("age", userData.age || 0);
@@ -55,7 +55,6 @@ const PersonalDetails: FC = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      
       if (userData && user) {
         const userDocRef = doc(db, "users", user.uid);
 
@@ -87,6 +86,8 @@ const PersonalDetails: FC = () => {
     } catch (error) {
       setError("Error updating user data: " + error.message);
       setSnackbarOpen(true);
+    } finally {
+      await fetchUserData();
     }
   };
 

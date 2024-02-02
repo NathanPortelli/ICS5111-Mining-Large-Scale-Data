@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./../firebase";
 
@@ -19,9 +19,10 @@ const Recommender = () => {
   const [customKcal, setCustomKcal] = useState(0); // Custom kcal based on user input
   const [submitKcal, setSubmitKcal] = useState(0); // Kcal submitted to FoodMenu
   const [goal, setGoal] = useState("");
+  const [disabledGeneratedRecommendation, setDisabledGeneratedRecommendation] =
+    useState(true);
 
-  const { user } = UserAuth();
-  const [uid, setUid] = useState(null);
+  const { userData } = UserAuth();
 
   const onSubmit = () => {
     setShowFoodMenu(false);
@@ -31,47 +32,41 @@ const Recommender = () => {
     setShowFoodMenu(true);
   };
 
-  const fetchUserData = async () => {
-    if (user) {
-      if (user && user.uid) {
-        const userDocRef = doc(db, "users", user.uid);
-
-        try {
-          const docSnap = await getDoc(userDocRef);
-          if (docSnap.exists()) {
-            return docSnap.data();
-          } else {
-            console.log("No user data found");
-            return null;
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          throw error;
-        }
-      } else {
-        console.error("userData is null or undefined");
-      }
+  useEffect(() => {
+    if (goal) {
+      openDropdown(goal ?? "");
     }
-  };
+
+    if (userData?.prefBreakfast || userData?.prefLunch || userData?.prefDinner) {
+      setDisabledGeneratedRecommendation(false);
+    }
+
+    setShowFoodMenu(false);
+  }, [goal, userData]);
 
   const openDropdown = async (goal) => {
     setShowDropdown(true);
     setGoal(goal);
 
     try {
-      // Fetch latest user data
-      const userDetails = await fetchUserData();
-  
       // Calculate BMR -- Based on: https://mohap.gov.ae/en/more/awareness-center/calories-calculation
       let bmr = 0;
-      if (userDetails) {
-        if (userDetails.gender === "male") {
-          bmr = 10 * userDetails.weight + 6.25 * userDetails.height - 5 * userDetails.age + 5;
+      if (userData) {
+        if (userData.gender === "male") {
+          bmr =
+            10 * userData.weight +
+            6.25 * userData.height -
+            5 * userData.age +
+            5;
         } else {
-          bmr = 10 * userDetails.weight + 6.25 * userDetails.height - 5 * userDetails.age - 161;
+          bmr =
+            10 * userData.weight +
+            6.25 * userData.height -
+            5 * userData.age -
+            161;
         }
       }
-  
+
       switch (goal) {
         case "Weight Loss":
           setRecommendedKcal(Math.floor(bmr - 500));
@@ -90,11 +85,11 @@ const Recommender = () => {
     } catch (error) {
       console.error("Error fetching user data ", error);
     }
-  };  
+  };
 
   return (
     <main className="flex flex-col bg-gray-800">
-      {user ? (
+      {userData ? (
         <>
           <h1 className="mt-8 text-4xl sm:text-6xl font-semibold text-white mb-6 text-center">
             Personalised Diet Recommender
@@ -161,65 +156,68 @@ const Recommender = () => {
                 </p>
               </div>
             </div>
-            <div className="p-5 border-2 bg-gray-600 rounded-md shadow-md">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {["Weight Loss", "Weight Gain", "Maintain"].map(
-                  (goalOption) => (
-                    <div
-                      key={goalOption}
-                      className="rounded-md shadow-md text-center"
-                    >
+            {userData.height && userData.weight && userData.age ? (
+              <div className="p-5 border-2 bg-gray-600 rounded-md shadow-md">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {["Weight Loss", "Weight Gain", "Maintain"].map(
+                    (goalOption) => (
+                      <div
+                        key={goalOption}
+                        className="rounded-md shadow-md text-center"
+                      >
+                        <button
+                          type="button"
+                          className={`w-full text-2xl px-4 py-2 ${
+                            goal === goalOption
+                              ? "bg-red-500 text-white"
+                              : "bg-blue-500 text-white"
+                          } rounded-md transition duration-300 hover:opacity-70`}
+                          onClick={() => openDropdown(goalOption)}
+                        >
+                          {goalOption}{" "}
+                          {goalOption === "Weight Loss"
+                            ? "🔥"
+                            : goalOption === "Weight Gain"
+                            ? "🍖"
+                            : "⚖️"}
+                        </button>
+                      </div>
+                    )
+                  )}
+                </div>
+                <div className="w-full">
+                  {showDropdown && (
+                    <div className="bg-white p-6 rounded-md shadow-md mt-4">
+                      <p className="mb-4 text-xl text-gray-800 font-semibold">
+                        For {goal}, the recommended calories are:{" "}
+                        <b>{recommendedKcal}</b> kcal
+                      </p>
+                      <label
+                        htmlFor="calories"
+                        className="block mb-2 text-gray-800 font-semibold"
+                      >
+                        Set alternate calories (kcal) goal:
+                      </label>
+                      <input
+                        id="calories"
+                        type="number"
+                        value={customKcal}
+                        onChange={(e) => setCustomKcal(e.target.valueAsNumber)}
+                        className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
+                      />
                       <button
                         type="button"
-                        className={`w-full text-2xl px-4 py-2 ${
-                          goal === goalOption
-                            ? "bg-red-500 text-white"
-                            : "bg-blue-500 text-white"
-                        } rounded-md transition duration-300 hover:opacity-70`}
-                        onClick={() => openDropdown(goalOption)}
+                        className="w-full text-xl font-bold px-4 py-2 bg-green-500 text-white rounded-md transition duration-300 hover:opacity-70 mt-4 disabled:bg-gray-500 disabled:cursor-not-allowed disabled:opacity-100"
+                        disabled={disabledGeneratedRecommendation}
+                        onClick={() => onSubmit()}
                       >
-                        {goalOption}{" "}
-                        {goalOption === "Weight Loss"
-                          ? "🔥"
-                          : goalOption === "Weight Gain"
-                          ? "🍖"
-                          : "⚖️"}
+                        Generate Recommendations
                       </button>
                     </div>
-                  )
-                )}
+                  )}
+                </div>
               </div>
-              <div className="w-full">
-                {showDropdown && (
-                  <div className="bg-white p-6 rounded-md shadow-md mt-4">
-                    <p className="mb-4 text-xl text-gray-800 font-semibold">
-                      For {goal}, the recommended calories are:{" "}
-                      <b>{recommendedKcal}</b> kcal
-                    </p>
-                    <label
-                      htmlFor="calories"
-                      className="block mb-2 text-gray-800 font-semibold"
-                    >
-                      Set alternate calories (kcal) goal:
-                    </label>
-                    <input
-                      id="calories"
-                      type="number"
-                      value={customKcal}
-                      onChange={(e) => setCustomKcal(e.target.valueAsNumber)}
-                      className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
-                    />
-                    <button
-                      type="button"
-                      className="w-full text-xl font-bold px-4 py-2 bg-green-500 text-white rounded-md transition duration-300 hover:opacity-70 mt-4"
-                      onClick={() => onSubmit()}
-                    >
-                      Generate Recommendations
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            ) : null}
           </div>
           {showFoodMenu && (
             <div className="ml-9 mr-9 mb-9">

@@ -259,19 +259,6 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
     }
   };
 
-  const isItemSelected = (mealType: string, itemId: string | number) => {
-    switch (mealType) {
-      case "breakfast":
-        return selectedBreakfast === itemId;
-      case "lunch":
-        return selectedLunch === itemId;
-      case "dinner":
-        return selectedDinner === itemId;
-      default:
-        return false;
-    }
-  };
-
   const saveMealToFirestore = async (
     unpicked_breakfast_options,
     unpicked_lunch_options,
