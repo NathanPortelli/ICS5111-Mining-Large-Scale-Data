@@ -119,38 +119,42 @@ const MenuSection: FC<MenuSectionProps> = ({
           <h3 className="text-xl font-semibold mt-3 mb-2 text-green-700">
             Alternative Menu Options for {selectedFoodName(mealType)}:
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {altItems && altItems?.length > 0 ? (
-              <>
-                {altItems.map((altItems) => (
-                  <div key={altItems.id}>
-                    <FoodCard
-                      key={altItems.id}
-                      {...altItems}
-                      selected={selected === altItems.id}
-                      alternate={alternate === altItems.id}
-                    />
-                    <button
-                      className={`w-full bg-blue-500 text-white px-4 py-2 mb-2 rounded-md transition duration-300 hover:opacity-70 ${
-                        selected === altItems.id ? "bg-red-500" : ""
-                      }`}
-                      onClick={() => handleSelect(mealType, altItems.id)}
-                    >
-                      {selected === altItems.id
-                        ? `Unpick ${title}`
-                        : `Pick ${title}`}
-                    </button>
-                  </div>
-                ))}
-              </>
-            ) : altItems && altItems?.length === 0 ? (
-              <h3 className="mb-2">No Alternative Results Found.</h3>
+          <>
+            {altItems ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {altItems.length > 0 ? (
+                  <>
+                    {altItems.map((altItems) => (
+                      <div key={altItems.id}>
+                        <FoodCard
+                          key={altItems.id}
+                          {...altItems}
+                          selected={selected === altItems.id}
+                          alternate={alternate === altItems.id}
+                        />
+                        <button
+                          className={`w-full bg-blue-500 text-white px-4 py-2 mb-2 rounded-md transition duration-300 hover:opacity-70 ${
+                            selected === altItems.id ? "bg-red-500" : ""
+                          }`}
+                          onClick={() => handleSelect(mealType, altItems.id)}
+                        >
+                          {selected === altItems.id
+                            ? `Unpick ${title}`
+                            : `Pick ${title}`}
+                        </button>
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <h3 className="mb-2">No Alternative Results Found.</h3>
+                )}
+              </div>
             ) : (
               <div className="flex flex-row justify-center">
                 <CircularProgress />
               </div>
             )}
-          </div>
+          </>
         </div>
       )}
     </div>
@@ -242,16 +246,16 @@ const FoodMenu: FC<FoodMenuProps> = ({ submitKcal }) => {
     if (alternativeMeals) {
       switch (mealType) {
         case "breakfast":
-          setAlternateBreakfastMenuItems(alternativeMeals.alternatives);
           setAlternateBreakfast((prev) => (prev === itemId ? null : itemId));
+          setAlternateBreakfastMenuItems(alternativeMeals.alternatives);
           break;
         case "lunch":
-          setAlternateLunchMenuItems(alternativeMeals.alternatives);
           setAlternateLunch((prev) => (prev === itemId ? null : itemId));
+          setAlternateLunchMenuItems(alternativeMeals.alternatives);
           break;
         case "dinner":
-          setAlternateDinnerMenuItems(alternativeMeals.alternatives);
           setAlternateDinner((prev) => (prev === itemId ? null : itemId));
+          setAlternateDinnerMenuItems(alternativeMeals.alternatives);
           break;
         default:
           break;

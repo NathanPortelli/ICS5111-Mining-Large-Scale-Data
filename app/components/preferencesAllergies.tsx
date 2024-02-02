@@ -110,7 +110,7 @@ const PreferenceAllegries: FC = () => {
             onClick={handleChangePreferences}
             className="w-full px-4 py-2 bg-gray-400 text-white rounded-md transition duration-300 hover:bg-gray-500"
           >
-            Change Restrictions
+            Save Restrictions
           </button>
         </div>
         <p className="text-sm pt-5 font-semibold">

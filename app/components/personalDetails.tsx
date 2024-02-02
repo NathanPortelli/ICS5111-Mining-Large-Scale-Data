@@ -206,7 +206,7 @@ const PersonalDetails: FC = () => {
             }}
             className="w-full px-4 py-2 bg-blue-500 text-white rounded-md transition duration-300 hover:bg-blue-600"
           >
-            Change Details
+            Save Details
           </button>
         </div>
       </form>
