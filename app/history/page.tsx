@@ -182,14 +182,14 @@ const MealHistory = () => {
                           (mealType) => (
                             <div
                               key={mealType}
-                              className="w-full h-full mb-4 lg:mb-0"
+                              className="w-full mb-4 lg:mb-0"
                             >
-                              <div className="flex h-full">
+                              <div className="flex">
                                 <div
                                   key={mealType}
-                                  className="bg-white rounded-md shadow-md mr-6 p-5 flex flex-col justify-between flex-grow"
+                                  className="bg-white rounded-md shadow-md mr-6 p-5 flex flex-col flex-grow"
                                 >
-                                  <h3 className="text-xl font-semibold mb-1">
+                                  <h3 className="text-xl font-semibold mb-1 text-ellipsis line-clamp-1 hover:line-clamp-none">
                                     {meal[mealType].title}
                                   </h3>
                                   <div className="bottom-0">
@@ -198,7 +198,7 @@ const MealHistory = () => {
                                         {mealType.charAt(0).toUpperCase() +
                                           mealType.slice(1)}
                                       </p>
-                                      <p className="text-gray-700 mb-2">
+                                      <p className="text-gray-700">
                                         <span
                                           role="img"
                                           aria-label="Fire Emoji"
