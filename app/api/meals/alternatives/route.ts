@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
   threeRandomRecipes.forEach((recipe) => {
     cleanedRecipes.push({
-      id: recipe.Id,
+      id: recipe.ID,
       title: recipe.Title,
       image: recipe.Image,
       calories: recipe.Calories,

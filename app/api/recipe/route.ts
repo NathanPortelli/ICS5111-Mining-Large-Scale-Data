@@ -61,15 +61,15 @@ export async function GET(request: NextRequest) {
           (nutrient) => nutrient.name.toLowerCase() === "calories"
         )?.amount || 0;
     } else {
-      const data: JORecipe | undefined = jamieOliverRecipesJSON!.find(
-        (recipe) => recipe!.Id === mealId
+      const data = jamieOliverRecipesJSON!.find(
+        (recipe) => recipe!.ID === mealId
       );
 
       if (!data) {
         return errorResponse({ message: "No recipe found" });
       }
 
-      id = data.Id;
+      id = data.ID;
       title = data.Title;
       extractedCalories = data.Calories;
       image = data.Image;
