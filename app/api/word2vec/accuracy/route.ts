@@ -92,10 +92,11 @@ export async function GET(request: NextRequest) {
     });
 
     const uniqueIngredients = [...new Set(foundIngredients)];
+    const uniqueRetrievedIngredients = [...new Set(retrievedIngredients)];
 
     const nonMatchingFromUniqueIngredients = uniqueIngredients.filter(
       (extractedIngredient) => {
-        return !retrievedIngredients.some((originalIngredient) =>
+        return !uniqueRetrievedIngredients.some((originalIngredient) =>
           originalIngredient
             .toLowerCase()
             .includes(extractedIngredient.toLowerCase())
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    const nonMatchingFromOriginalIngredients = retrievedIngredients.filter(
+    const nonMatchingFromOriginalIngredients = uniqueRetrievedIngredients.filter(
       (originalIngredient) => {
         return !uniqueIngredients.some((extractedIngredient) =>
           originalIngredient
@@ -133,7 +134,7 @@ export async function GET(request: NextRequest) {
 
     const extractedData = {
       etxractedIngredients: uniqueIngredients,
-      originalIngredients: retrievedIngredients,
+      originalIngredients: uniqueRetrievedIngredients,
       nonMatchingFromOriginalIngredients,
       nonMatchingFromUniqueIngredients,
       allNonMatchingIngredients,
