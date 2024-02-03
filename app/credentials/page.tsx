@@ -120,7 +120,7 @@ const Credentials = () => {
             }) => (
               <TextField
                 error={invalid}
-                type="email"
+                type="text"
                 label="Email"
                 onChange={onChange}
                 value={value}

@@ -46,6 +46,14 @@ const Recommender = () => {
     setShowFoodMenu(false);
   }, [goal, userData]);
 
+  useEffect(() => {
+    if (customKcal < 249 || !customKcal) {
+      setDisabledGeneratedRecommendation(true);
+    } else {
+      setDisabledGeneratedRecommendation(false);
+    }
+  }, [customKcal]);
+
   const openDropdown = async (goal) => {
     setShowDropdown(true);
     setGoal(goal);
