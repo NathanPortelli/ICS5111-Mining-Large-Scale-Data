@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 
       fullInstructions = fixSentenceSpacing(removeTags(data.RecipeSteps));
       if (Array.isArray(data.Ingredients)) {
-        retrievedIngredients = data.Ingredients;
+        retrievedIngredients = data.Ingredients.filter(ingredient => ingredient.trim() !== '');
       } else {
         throw new Error("Ingredients are not an array");
       }
