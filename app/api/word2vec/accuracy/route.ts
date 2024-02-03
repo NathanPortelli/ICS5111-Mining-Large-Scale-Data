@@ -39,11 +39,8 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    let id: string | number = "";
-    let title: string = "";
-    let image: string = "";
     let fullInstructions: string = "";
-    let extractedCalories: number = 0;
+    let retrievedIngredients: string[] = [];
 
     if (Number(mealId)) {
       const spoonacularResponse = await spoonacularBaseAPI(
@@ -51,14 +48,10 @@ export async function GET(request: NextRequest) {
       );
       const data: SpoonacularRecipeResponse = await spoonacularResponse.json();
 
-      id = data.id;
-      title = data.title;
-      image = data.image;
       fullInstructions = fixSentenceSpacing(removeTags(data.instructions));
-      extractedCalories =
-        data.nutrition.nutrients.find(
-          (nutrient) => nutrient.name.toLowerCase() === "calories"
-        )?.amount || 0;
+      retrievedIngredients = data.extendedIngredients.map(
+        (ingredient) => ingredient.name
+      );
     } else {
       const data = jamieOliverRecipesJSON!.find(
         (recipe) => recipe!.ID === mealId
@@ -68,12 +61,12 @@ export async function GET(request: NextRequest) {
         return errorResponse({ message: "No recipe found" });
       }
 
-      id = data.ID;
-      title = data.Title;
-      extractedCalories = data.Calories;
-      image = data.Image;
       fullInstructions = fixSentenceSpacing(removeTags(data.RecipeSteps));
-      extractedCalories = data.Calories;
+      if (Array.isArray(data.Ingredients)) {
+        retrievedIngredients = data.Ingredients;
+      } else {
+        throw new Error("Ingredients are not an array");
+      }
     }
 
     const splitInstructions = extractTextToArray(fullInstructions);
@@ -100,16 +93,51 @@ export async function GET(request: NextRequest) {
 
     const uniqueIngredients = [...new Set(foundIngredients)];
 
+    const nonMatchingFromUniqueIngredients = uniqueIngredients.filter(
+      (extractedIngredient) => {
+        return !retrievedIngredients.some((originalIngredient) =>
+          originalIngredient
+            .toLowerCase()
+            .includes(extractedIngredient.toLowerCase())
+        );
+      }
+    );
+
+    const nonMatchingFromOriginalIngredients = retrievedIngredients.filter(
+      (originalIngredient) => {
+        return !uniqueIngredients.some((extractedIngredient) =>
+          originalIngredient
+            .toLowerCase()
+            .includes(extractedIngredient.toLowerCase())
+        );
+      }
+    );
+
+    const allNonMatchingIngredients = [
+      ...nonMatchingFromUniqueIngredients,
+      ...nonMatchingFromOriginalIngredients,
+    ];
+
+    const matchingIngredients = uniqueIngredients.filter(
+      (extractedIngredient) => {
+        return retrievedIngredients.some((originalIngredient) =>
+          originalIngredient
+            .toLowerCase()
+            .includes(extractedIngredient.toLowerCase())
+        );
+      }
+    );
+
+    const accuracy =
+      (matchingIngredients.length / retrievedIngredients.length) * 100;
+
     const extractedData = {
-      id,
-      title,
-      image,
-      instructions: {
-        full: fullInstructions,
-        split: splitInstructions,
-      },
-      ingredients: uniqueIngredients,
-      calories: extractedCalories ? Math.round(extractedCalories) : null,
+      etxractedIngredients: uniqueIngredients,
+      originalIngredients: retrievedIngredients,
+      nonMatchingFromOriginalIngredients,
+      nonMatchingFromUniqueIngredients,
+      allNonMatchingIngredients,
+      accuracy: `${accuracy.toFixed(2)}%`,
     };
 
     return okResponse(extractedData);
