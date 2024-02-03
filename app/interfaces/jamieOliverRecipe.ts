@@ -7,4 +7,5 @@ export interface JORecipe {
   Carbs: number | string;
   Image: string;
   RecipeSteps: string;
+  Ingredients: string[];
 }

@@ -6,7 +6,6 @@ import { db, auth } from "../firebase";
 
 import { Snackbar } from "@mui/material";
 import { UserAuth } from "../context/AuthContext";
-import { set } from "firebase/database";
 
 const PreferenceAllegries: FC = () => {
   const { register } = useForm();

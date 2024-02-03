@@ -2,22 +2,33 @@
 
 import { useRouter } from "next/navigation";
 
-import { Snackbar } from "@mui/material";
-import { useState } from "react";
+import { Snackbar, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import { collection, doc, setDoc } from "firebase/firestore";
 import { UserAuth } from "../context/AuthContext";
-import { db } from "./../firebase";
+import { useForm, Controller } from "react-hook-form";
+
+interface FormValues {
+  name?: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+}
 
 const Credentials = () => {
   const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { reset, handleSubmit, control, getValues } = useForm<FormValues>({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
   const [error, setError] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
 
   const { signIn, signUp } = UserAuth();
@@ -27,6 +38,7 @@ const Credentials = () => {
   };
 
   const handleSignIn = async () => {
+    const { email, password } = getValues();
     try {
       await signIn(email, password);
       setError("Sign in successful!");
@@ -39,13 +51,9 @@ const Credentials = () => {
   };
 
   const handleRegister = async () => {
-    try {
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
-        setSnackbarOpen(true);
-        return;
-      }
+    const { name, email, password } = getValues();
 
+    try {
       await signUp(name, email, password);
 
       setError("Registration successful!");
@@ -57,6 +65,10 @@ const Credentials = () => {
     }
   };
 
+  useEffect(() => {
+    reset();
+  }, [isRegistering, reset]);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-800">
       <h1 className="mt-8 text-4xl font-semibold text-white mb-8">
@@ -66,67 +78,108 @@ const Credentials = () => {
         <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">
           {isRegistering ? "Create an Account" : "Sign In"}
         </h2>
-        <form className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={handleSubmit(isRegistering ? handleRegister : handleSignIn)}
+        >
           {isRegistering && (
-            <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-600">
-                Name:
-              </label>
-              <input
-                type="name"
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: "Name is required" }}
+              render={({
+                field: { onChange, value },
+                fieldState: { invalid, error },
+              }) => (
+                <TextField
+                  error={invalid}
+                  type="text"
+                  label="Name"
+                  onChange={onChange}
+                  value={value}
+                  helperText={error?.message}
+                  className="w-full"
+                />
+              )}
+            />
           )}
 
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Email:
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
-              autoComplete="email"
-              required
-            />
-          </div>
+          <Controller
+            name="email"
+            control={control}
+            rules={{
+              required: "Email is required",
+              pattern: {
+                value: /\S+@\S+\.\S+/,
+                message: "Entered value is not an email format",
+              },
+            }}
+            render={({
+              field: { onChange, value },
+              fieldState: { invalid, error },
+            }) => (
+              <TextField
+                error={invalid}
+                type="email"
+                label="Email"
+                onChange={onChange}
+                value={value}
+                helperText={error?.message}
+                className="w-full"
+              />
+            )}
+          />
 
-          <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Password:
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
-              autoComplete="current-password"
-              required
-            />
-          </div>
+          <Controller
+            name="password"
+            control={control}
+            rules={{
+              required: "Password is required",
+            }}
+            render={({
+              field: { onChange, value },
+              fieldState: { invalid, error },
+            }) => (
+              <TextField
+                error={invalid}
+                type="password"
+                label="Password"
+                onChange={onChange}
+                value={value}
+                helperText={error?.message}
+                className="w-full"
+              />
+            )}
+          />
 
           {isRegistering && (
-            <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-600">
-                Confirm Password:
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:border-blue-500"
-              />
-            </div>
+            <Controller
+              name="confirmPassword"
+              control={control}
+              rules={{
+                required: "Confirm Password is required",
+                validate: (value) =>
+                  value === getValues("password") || "Passwords do not match",
+              }}
+              render={({
+                field: { onChange, value },
+                fieldState: { invalid, error },
+              }) => (
+                <TextField
+                  error={invalid}
+                  type="password"
+                  label="Confirm Password"
+                  onChange={onChange}
+                  value={value}
+                  helperText={error?.message}
+                  className="w-full"
+                />
+              )}
+            />
           )}
 
           <button
-            type="button"
-            onClick={isRegistering ? handleRegister : handleSignIn}
+            type="submit"
             className="w-full px-4 py-2 bg-blue-500 text-white rounded-md transition duration-300 hover:bg-blue-600"
           >
             {isRegistering ? "Register" : "Sign In"}
