@@ -1,10 +1,19 @@
 import { FC, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { doc, updateDoc } from "firebase/firestore";
-import { auth, db } from "./../firebase";
+import { db } from "./../firebase";
 
-import { Snackbar } from "@mui/material";
+import {
+  CircularProgress,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import { UserAuth } from "../context/AuthContext";
 
 const PersonalDetails: FC = () => {
@@ -12,7 +21,7 @@ const PersonalDetails: FC = () => {
     setSnackbarOpen(false);
   };
 
-  const { register, handleSubmit, setValue, control } = useForm({
+  const { handleSubmit, setValue, control, getValues } = useForm({
     defaultValues: {
       gender: "",
       age: 0,
@@ -112,7 +121,11 @@ const PersonalDetails: FC = () => {
   };
 
   if (loading) {
-    return <p className="text-white">Loading...</p>;
+    return (
+      <div className="flex h-20 flex-col items-center justify-center bg-white rounded-md">
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (
@@ -120,81 +133,127 @@ const PersonalDetails: FC = () => {
       {/* Personal Details Section */}
       <form className="gap-8 p-6 bg-white rounded-md shadow-md">
         <div className="mb-6">
-          <label
-            htmlFor="gender"
-            className="block mb-2 font-semibold text-gray-800"
-          >
-            Gender:
-          </label>
-          <select
-            id="gender"
-            {...register("gender")}
-            className="w-full p-3 border rounded focus:outline-none focus:border-blue-500"
-          >
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
+          <Controller
+            name="gender"
+            control={control}
+            rules={{ required: "Gender is required" }}
+            render={({
+              field: { onChange, value },
+              fieldState: { invalid, error },
+            }) => (
+              <FormControl className="w-full" error={invalid}>
+                <InputLabel id="gender-error-label">Gender</InputLabel>
+                <Select
+                  labelId="gender-error-label"
+                  value={value}
+                  onChange={onChange}
+                  error={invalid}
+                  className="w-full"
+                  label="Gender"
+                >
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+                <FormHelperText>{error?.message}</FormHelperText>
+              </FormControl>
+            )}
+          />
         </div>
         <div className="mb-6">
-          <label
-            htmlFor="age"
-            className="block mb-2 font-semibold text-gray-800"
-          >
-            Age:
-          </label>
-          <input
-            type="number"
-            id="age"
-            {...register("age", { valueAsNumber: true })}
-            className="w-full p-3 border rounded focus:outline-none focus:border-blue-500"
+          <Controller
+            name="age"
+            control={control}
+            rules={{
+              required: "Age is required",
+              validate: (value) => value > 0 || "Age must be greater than 0",
+            }}
+            render={({
+              field: { onChange, value },
+              fieldState: { invalid, error },
+            }) => (
+              <TextField
+                error={invalid}
+                type="number"
+                label="Age"
+                onChange={onChange}
+                value={value}
+                helperText={error?.message}
+                className="w-full"
+                InputProps={{ inputProps: { min: 0 } }}
+              />
+            )}
           />
         </div>
 
         <div className="mb-6">
-          <label
-            htmlFor="height"
-            className="block mb-2 font-semibold text-gray-800"
-          >
-            Height (cm):
-          </label>
-          <input
-            type="number"
-            id="height"
-            {...register("height", { valueAsNumber: true })}
-            className="w-full p-3 border rounded focus:outline-none focus:border-blue-500"
+          <Controller
+            name="height"
+            control={control}
+            rules={{
+              required: "Height is required",
+              validate: (value) => value > 0 || "Height must be greater than 0",
+            }}
+            render={({
+              field: { onChange, value },
+              fieldState: { invalid, error },
+            }) => (
+              <TextField
+                error={invalid}
+                type="number"
+                label="Height (cm)"
+                onChange={onChange}
+                value={value}
+                helperText={error?.message}
+                className="w-full"
+                InputProps={{ inputProps: { min: 0 } }}
+              />
+            )}
           />
         </div>
 
         <div className="mb-6">
-          <label
-            htmlFor="weight"
-            className="block mb-2 font-semibold text-gray-800"
-          >
-            Weight (kg):
-          </label>
-          <input
-            type="number"
-            id="weight"
-            {...register("weight", { valueAsNumber: true })}
-            className="w-full p-3 border rounded focus:outline-none focus:border-blue-500"
+          <Controller
+            name="weight"
+            control={control}
+            rules={{
+              required: "Weight is required",
+              validate: (value) => value > 0 || "Weight must be greater than 0",
+            }}
+            render={({
+              field: { onChange, value },
+              fieldState: { invalid, error },
+            }) => (
+              <TextField
+                error={invalid}
+                type="number"
+                label="Weight (kg)"
+                onChange={onChange}
+                value={value}
+                helperText={error?.message}
+                className="w-full"
+                InputProps={{ inputProps: { min: 0 } }}
+              />
+            )}
           />
         </div>
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-3 text-gray-800">
-            Body Mass Index (BMI)
-          </h3>
-          <p className="text-2xl text-gray-800">
-            {bmi?.toFixed(1)} kg/m<sup>2</sup>
-          </p>
-          <p
-            className={`text-gray-800 font-semibold ${getWeightStatusColor(
-              bmi
-            )}`}
-          >
-            {getWeightStatus(bmi)}
-          </p>
-        </div>
+        {bmi && (
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold mb-3 text-gray-800">
+              Body Mass Index (BMI)
+            </h3>
+            <p className="text-2xl text-gray-800">
+              {bmi?.toFixed(1)} kg/m<sup>2</sup>
+            </p>
+            <p
+              className={`text-gray-800 font-semibold ${getWeightStatusColor(
+                bmi
+              )}`}
+            >
+              {getWeightStatus(bmi)}
+            </p>
+          </div>
+        )}
         <div>
           <button
             type="button"

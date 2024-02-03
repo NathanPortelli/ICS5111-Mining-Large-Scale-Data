@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 
-import { Snackbar } from "@mui/material";
+import { CircularProgress, Snackbar } from "@mui/material";
 import { UserAuth } from "../context/AuthContext";
 
 const PreferenceAllegries: FC = () => {
@@ -65,7 +65,11 @@ const PreferenceAllegries: FC = () => {
   }, [userData]);
 
   if (loading) {
-    return <p className="text-white">Loading...</p>;
+    return (
+      <div className="flex h-20 flex-col items-center justify-center bg-white rounded-md">
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (
