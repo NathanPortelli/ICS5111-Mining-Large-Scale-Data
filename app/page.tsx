@@ -30,8 +30,8 @@ export default function Home() {
           Project Details
         </p>
         <p className="text-white">
-          <b>Title:</b> Utilising Structured and Unstructured Data for
-          Intelligent Diet Recommendations
+          <b>Title:</b> Utilising Text Mining Techniques for Personalised 
+          Diet Recommendations using Heterogeneous Data
         </p>
         <p className="text-white">
           Created in fulfillment of the requirements for the ICS5111 Mining
@@ -101,7 +101,7 @@ export default function Home() {
           </a>
         </p>
       </div>
-
+    
       <div className="text-center mb-4">
         <button
           type="button"
