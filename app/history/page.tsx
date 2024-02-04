@@ -186,11 +186,11 @@ const MealHistory = () => {
                       <div key={mealIndex} className="w-full">
                         <div className="flex flex-col lg:flex-row h-full">
                           {["breakfast", "lunch", "dinner"].map((mealType) => (
-                            <div key={mealType} className="w-full mb-4 lg:mb-0">
+                            <div key={mealType} className="w-full lg:mb-0">
                               <div className="flex">
                                 <div
                                   key={mealType}
-                                  className="bg-white rounded-md shadow-md mr-6 p-5 flex flex-col flex-grow"
+                                  className="bg-white rounded-md shadow-md mr-6 p-5 flex flex-col flex-grow mb-5"
                                 >
                                   <h3 className="text-xl font-semibold mb-1 text-ellipsis line-clamp-1 hover:line-clamp-none">
                                     {meal[mealType].title}
