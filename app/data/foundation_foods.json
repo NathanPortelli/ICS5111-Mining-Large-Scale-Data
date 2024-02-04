@@ -1,7 +1,7 @@
 [
   {
-    "target": "dairy_eggs",
-    "context": [
+    "category": "dairy_eggs",
+    "items": [
       "egg",
       "cheese",
       "yogurt",
@@ -13,17 +13,17 @@
       "cream"
     ]
   },
-  { "target": "spices_herbs", "context": ["mustard", "salt"] },
-  { "target": "fats_oils", "context": ["oil"] },
-  { "target": "poultry", "context": ["chicken", "turkey"] },
-  { "target": "soups_sauces_gravies", "context": ["sauce"] },
+  { "category": "spices_herbs", "items": ["mustard", "salt"] },
+  { "category": "fats_oils", "items": ["oil"] },
+  { "category": "poultry", "items": ["chicken", "turkey"] },
+  { "category": "soups_sauces_gravies", "items": ["sauce"] },
   {
-    "target": "sausages_luncheon_meats",
-    "context": ["frankfurter", "ham", "sausage"]
+    "category": "sausages_luncheon_meats",
+    "items": ["frankfurter", "ham", "sausage"]
   },
   {
-    "target": "fruits",
-    "context": [
+    "category": "fruits",
+    "items": [
       "grapefruit",
       "peaches",
       "kiwifruit",
@@ -48,10 +48,10 @@
       "applesauce"
     ]
   },
-  { "target": "pork", "context": ["pork"] },
+  { "category": "pork", "items": ["pork"] },
   {
-    "target": "vegetables",
-    "context": [
+    "category": "vegetables",
+    "items": [
       "tomatoes",
       "beans",
       "kale",
@@ -76,13 +76,13 @@
       "peas"
     ]
   },
-  { "target": "nut_seed", "context": ["nuts", "seeds", "sesame", "flaxseed"] },
-  { "target": "beef", "context": ["beef"] },
-  { "target": "beverages", "context": ["almond", "oat"] },
-  { "target": "finfish_shellfish", "context": ["fish"] },
+  { "category": "nut_seed", "items": ["nuts", "seeds", "sesame", "flaxseed"] },
+  { "category": "beef", "items": ["beef"] },
+  { "category": "beverages", "items": ["almond", "oat"] },
+  { "category": "finfish_shellfish", "items": ["fish"] },
   {
-    "target": "legumes",
-    "context": [
+    "category": "legumes",
+    "items": [
       "hummus",
       "soy",
       "peanut",
@@ -92,10 +92,10 @@
       "blackeye"
     ]
   },
-  { "target": "baked", "context": ["bread", "cookies"] },
-  { "target": "sweets", "context": ["sugars"] },
+  { "category": "baked", "items": ["bread", "cookies"] },
+  { "category": "sweets", "items": ["sugars"] },
   {
-    "target": "cereal_grains_pasta",
-    "context": ["flour", "oats", "buckwheat", "millet", "rice"]
+    "category": "cereal_grains_pasta",
+    "items": ["flour", "oats", "buckwheat", "millet", "rice"]
   }
 ]

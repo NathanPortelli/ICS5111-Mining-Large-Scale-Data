@@ -1,21 +1,41 @@
 import { errorResponse, okResponse } from "@/app/utils/responses";
+import { extractTextToArray, fixSentenceSpacing, removeTags, removeWordsFromSentence, splitSentencesIntoWords } from "@/app/utils/textUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
-import foundationFoodsJSON from "@/app/data/foundation_foods.json";
-import { NextRequest } from "next/server";
+import stopwordsJSON from "@/app/data/stopwords.json";
 
-export async function GET(request: NextRequest) {
+interface RequestBody {
+  text: string;
+}
+
+export async function POST(request: Request) {
   try {
+    const { text } = (await request.json()) as RequestBody;
+
+    const stopWords = stopwordsJSON
+      .map((word) => word.word)
+      .filter((word): word is string => typeof word === "string");
+
     const word2vec = new Word2Vec();
 
-    foundationFoodsJSON.forEach((food) => {
-      word2vec.addWords([food.target, ...food.context]);
+    const cleanText = fixSentenceSpacing(removeTags(text));
+
+    const splitText = extractTextToArray(cleanText);
+
+    const textToWords = splitSentencesIntoWords(splitText);
+
+    let textWithoutStopWords: string[][] = [];
+
+    textToWords.forEach((sentence) => {
+      textWithoutStopWords.push(
+        removeWordsFromSentence(sentence, stopWords)
+      );
     });
 
-    for (let epoch = 0; epoch < 100; epoch++) {
-      foundationFoodsJSON.forEach((food) => {
-        word2vec.train(food.target, food.context);
-      });
-    }
+    word2vec.addSentences(textWithoutStopWords);
+
+    word2vec.initializeVectors();
+
+    word2vec.trainWithSentences(textWithoutStopWords);
 
     const wordList = Array.from(word2vec.vocab);
     const vectors = wordList.map((word) => word2vec.getWordVector(word));

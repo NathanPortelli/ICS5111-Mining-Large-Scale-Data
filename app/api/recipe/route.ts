@@ -29,16 +29,6 @@ export async function GET(request: NextRequest) {
 
     const word2vec = new Word2Vec();
 
-    foundationFoodsJSON.forEach((food) => {
-      word2vec.addWords([food.target, ...food.context]);
-    });
-
-    for (let epoch = 0; epoch < 100; epoch++) {
-      foundationFoodsJSON.forEach((food) => {
-        word2vec.train(food.target, food.context);
-      });
-    }
-
     let id: string | number = "";
     let title: string = "";
     let image: string = "";
@@ -88,17 +78,17 @@ export async function GET(request: NextRequest) {
       );
     });
 
-    const foundIngredients: string[] = [];
+    word2vec.addSentences(instructionsWithoutStopWords);
 
-    instructionsWithoutStopWords.forEach((instruction) => {
-      instruction.forEach((word) => {
-        if (word2vec.hasWord(word)) {
-          foundIngredients.push(word);
-        }
-      });
-    });
+    word2vec.initializeVectors();
 
-    const uniqueIngredients = [...new Set(foundIngredients)];
+    word2vec.trainWithSentences(instructionsWithoutStopWords);
+
+    const allFoundationFoods = foundationFoodsJSON.flatMap(category => category.items);
+
+    const extractIngredients = word2vec.extractIngredients(splitInstructions, allFoundationFoods);
+
+    const uniqueIngredients = [...new Set(extractIngredients)];
 
     const extractedData = {
       id,

@@ -29,16 +29,6 @@ export async function GET(request: NextRequest) {
 
     const word2vec = new Word2Vec();
 
-    foundationFoodsJSON.forEach((food) => {
-      word2vec.addWords([food.target, ...food.context]);
-    });
-
-    for (let epoch = 0; epoch < 100; epoch++) {
-      foundationFoodsJSON.forEach((food) => {
-        word2vec.train(food.target, food.context);
-      });
-    }
-
     let fullInstructions: string = "";
     let retrievedIngredients: string[] = [];
 
@@ -63,7 +53,9 @@ export async function GET(request: NextRequest) {
 
       fullInstructions = fixSentenceSpacing(removeTags(data.RecipeSteps));
       if (Array.isArray(data.Ingredients)) {
-        retrievedIngredients = data.Ingredients.filter(ingredient => ingredient.trim() !== '');
+        retrievedIngredients = data.Ingredients.filter(
+          (ingredient) => ingredient.trim() !== ""
+        );
       } else {
         throw new Error("Ingredients are not an array");
       }
@@ -81,17 +73,22 @@ export async function GET(request: NextRequest) {
       );
     });
 
-    const foundIngredients: string[] = [];
+    word2vec.addSentences(instructionsWithoutStopWords);
 
-    instructionsWithoutStopWords.forEach((instruction) => {
-      instruction.forEach((word) => {
-        if (word2vec.hasWord(word)) {
-          foundIngredients.push(word);
-        }
-      });
-    });
+    word2vec.initializeVectors();
 
-    const uniqueIngredients = [...new Set(foundIngredients)];
+    word2vec.trainWithSentences(instructionsWithoutStopWords);
+
+    const allFoundationFoods = foundationFoodsJSON.flatMap(
+      (category) => category.items
+    );
+
+    const extractIngredients = word2vec.extractIngredients(
+      splitInstructions,
+      allFoundationFoods
+    );
+
+    const uniqueIngredients = [...new Set(extractIngredients)];
     const uniqueRetrievedIngredients = [...new Set(retrievedIngredients)];
 
     const nonMatchingFromUniqueIngredients = uniqueIngredients.filter(
@@ -104,15 +101,14 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    const nonMatchingFromOriginalIngredients = uniqueRetrievedIngredients.filter(
-      (originalIngredient) => {
+    const nonMatchingFromOriginalIngredients =
+      uniqueRetrievedIngredients.filter((originalIngredient) => {
         return !uniqueIngredients.some((extractedIngredient) =>
           originalIngredient
             .toLowerCase()
             .includes(extractedIngredient.toLowerCase())
         );
-      }
-    );
+      });
 
     const allNonMatchingIngredients = [
       ...nonMatchingFromUniqueIngredients,

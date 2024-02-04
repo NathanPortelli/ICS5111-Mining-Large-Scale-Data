@@ -11,8 +11,6 @@ import {
 } from "@/app/utils/textUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
 
-
-
 function chooseThreeRandomRecipes(arr: JORecipe[]): JORecipe[] {
   if (arr.length <= 3) {
     return arr;
@@ -48,9 +46,11 @@ export async function POST(request: Request) {
     }
   );
 
-  const splitMealTitle = splitSentencesIntoWords([meal_title]);
+  const splitMealTitle = splitSentencesIntoWords([meal_title.toLowerCase()]);
 
-  const stopWords: string[] = stopwordsJSON.map((word) => word.word).filter((word): word is string => typeof word === 'string');
+  const stopWords: string[] = stopwordsJSON
+    .map((word) => word.word)
+    .filter((word): word is string => typeof word === "string");
 
   let titleWithoutStopWords: string[][] = [];
 
@@ -60,27 +60,21 @@ export async function POST(request: Request) {
 
   const word2vec = new Word2Vec();
 
-  foundationFoodsJSON.forEach((food) => {
-    word2vec.addWords([food.target, ...food.context]);
-  });
+  word2vec.addSentences(titleWithoutStopWords);
 
-  for (let epoch = 0; epoch < 100; epoch++) {
-    foundationFoodsJSON.forEach((food) => {
-      word2vec.train(food.target, food.context);
-    });
-  }
+  word2vec.initializeVectors();
 
-  const foundIngredients: string[] = [];
+  word2vec.trainWithSentences(titleWithoutStopWords);
 
-  titleWithoutStopWords.forEach((title) => {
-    title.forEach((word) => {
-      if (word2vec.hasWord(word.toLowerCase())) {
-        foundIngredients.push(word.toLowerCase());
-      }
-    });
-  });
+  const allFoundationFoods = foundationFoodsJSON.flatMap(
+    (category) => category.items
+  );
 
-  const uniqueIngredients = [...new Set(foundIngredients)];
+  const extractIngredients = word2vec.extractIngredients(
+    allFoundationFoods,
+    titleWithoutStopWords[0]
+  );
+  const uniqueIngredients = [...new Set(extractIngredients)];
 
   const filterJORecipesByUniqueIngredients = filterJORecipesByCalories.filter(
     (recipe: JORecipe) => {

@@ -1,6 +1,13 @@
 "use client";
 
-import { Timestamp, collection, getDocs, orderBy, query, where, } from "firebase/firestore";
+import {
+  Timestamp,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "./../firebase";
 
@@ -122,45 +129,45 @@ const MealHistory = () => {
   };
 
   const groupMealsByDate = async (meals: Meal[]) => {
-  const baseRecipeUrl = "/api/recipe?mealId=";
-  const groupedMeals: { [date: string]: GroupMeal[] } = {};
+    const baseRecipeUrl = "/api/recipe?mealId=";
+    const groupedMeals: { [date: string]: GroupMeal[] } = {};
 
-  try {
-    await Promise.all(
-      meals.map(async (meal) => {
-        const dateString = meal.date.toDate().toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        });
+    try {
+      await Promise.all(
+        meals.map(async (meal) => {
+          const dateString = meal.date.toDate().toLocaleDateString("en-GB", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
 
-        if (!groupedMeals[dateString]) {
-          groupedMeals[dateString] = [];
-        }
+          if (!groupedMeals[dateString]) {
+            groupedMeals[dateString] = [];
+          }
 
-        const breakfast = await GET(baseRecipeUrl + meal.breakfast).then(
-          (res) => res.json()
-        );
-        const lunch = await GET(baseRecipeUrl + meal.lunch).then((res) =>
-          res.json()
-        );
-        const dinner = await GET(baseRecipeUrl + meal.dinner).then((res) =>
-          res.json()
-        );
+          const breakfast = await GET(baseRecipeUrl + meal.breakfast).then(
+            (res) => res.json()
+          );
+          const lunch = await GET(baseRecipeUrl + meal.lunch).then((res) =>
+            res.json()
+          );
+          const dinner = await GET(baseRecipeUrl + meal.dinner).then((res) =>
+            res.json()
+          );
 
-        groupedMeals[dateString].push({
-          breakfast,
-          lunch,
-          dinner,
-        });
-      })
-    );
-  } catch (error) {
-    console.log("Error fetching recipe: ", error.message);
-  } finally {
-    return groupedMeals;
-  }
-};
+          groupedMeals[dateString].push({
+            breakfast,
+            lunch,
+            dinner,
+          });
+        })
+      );
+    } catch (error) {
+      console.log("Error fetching recipe: ", error.message);
+    } finally {
+      return groupedMeals;
+    }
+  };
 
   return (
     <main className="flex flex-col bg-gray-800">
@@ -176,14 +183,10 @@ const MealHistory = () => {
                   <h2 className="text-2xl text-white mb-4">{dateString}</h2>
                   <div className="flex flex-wrap justify-between mb-4">
                     {groupedMeals[dateString].map((meal, mealIndex) => (
-                    <div key={mealIndex} className="w-full">
-                      <div className="flex flex-col lg:flex-row h-full">
-                        {["breakfast", "lunch", "dinner"].map(
-                          (mealType) => (
-                            <div
-                              key={mealType}
-                              className="w-full mb-4 lg:mb-0"
-                            >
+                      <div key={mealIndex} className="w-full">
+                        <div className="flex flex-col lg:flex-row h-full">
+                          {["breakfast", "lunch", "dinner"].map((mealType) => (
+                            <div key={mealType} className="w-full mb-4 lg:mb-0">
                               <div className="flex">
                                 <div
                                   key={mealType}
@@ -239,15 +242,24 @@ const MealHistory = () => {
                                           mealType
                                         ] && (
                                           <div className="pl-2">
-                                            {meal[mealType].ingredients.map(
-                                              (ingredient, index) => (
-                                                <li key={index}>
-                                                  {ingredient
-                                                    .charAt(0)
-                                                    .toUpperCase() +
-                                                    ingredient.slice(1)}
-                                                </li>
-                                              )
+                                            {meal[mealType].ingredients
+                                              .length === 0 ? (
+                                              <p className="text-gray-600 mb-2">
+                                                No ingredients detected 😔
+                                              </p>
+                                            ) : (
+                                              <>
+                                                {meal[mealType].ingredients.map(
+                                                  (ingredient, index) => (
+                                                    <li key={index}>
+                                                      {ingredient
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                        ingredient.slice(1)}
+                                                    </li>
+                                                  )
+                                                )}
+                                              </>
                                             )}
                                           </div>
                                         )}
@@ -271,17 +283,13 @@ const MealHistory = () => {
                                         ] && (
                                           <div className="mb-4 px-2 py-2">
                                             <ol className="list-decimal pl-4">
-                                              {meal[
-                                                mealType
-                                              ].instructions.full
+                                              {meal[mealType].instructions.full
                                                 .split(". ")
-                                                .map(
-                                                  (instruction, index) => (
-                                                    <li key={index}>
-                                                      {instruction}
-                                                    </li>
-                                                  )
-                                                )}
+                                                .map((instruction, index) => (
+                                                  <li key={index}>
+                                                    {instruction}
+                                                  </li>
+                                                ))}
                                             </ol>
                                           </div>
                                         )}
@@ -290,15 +298,14 @@ const MealHistory = () => {
                                 </div>
                               </div>
                             </div>
-                          )
-                        )}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </section>
+              ))}
+            </section>
           ) : (
             <div className="mt-8 ml-9 mr-9">
               <h1 className="text-4xl font-semibold text-white mb-6">
@@ -335,9 +342,12 @@ const MealHistory = () => {
                 Meal History
               </h1>
               <p className="text-white text-2xl mt-5 justify-center">
-                There is no meal history data available. To set your meal plan, go to {" "} 
-                <a className="text-blue-400" href="/diet">Diet</a>
-                {" "} and select three meals for the day.
+                There is no meal history data available. To set your meal plan,
+                go to{" "}
+                <a className="text-blue-400" href="/diet">
+                  Diet
+                </a>{" "}
+                and select three meals for the day.
               </p>
             </div>
           )}
