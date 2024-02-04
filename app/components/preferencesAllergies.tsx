@@ -1,8 +1,8 @@
-import { FC, useState, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 import { CircularProgress, Snackbar } from "@mui/material";
 import { UserAuth } from "../context/AuthContext";

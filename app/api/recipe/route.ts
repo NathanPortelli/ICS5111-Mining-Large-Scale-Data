@@ -1,8 +1,9 @@
-import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
 import foundationFoodsJSON from "@/app/data/foundation_foods.json";
+import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
 import stopwordsJSON from "@/app/data/stopwords.json";
-import { errorResponse, okResponse } from "@/app/utils/responses";
+import { SpoonacularRecipeResponse } from "@/app/interfaces/spoonacularRecipeResponse";
 import { spoonacularBaseAPI } from "@/app/utils/baseSpoonacular";
+import { errorResponse, okResponse } from "@/app/utils/responses";
 import {
   extractTextToArray,
   fixSentenceSpacing,
@@ -12,7 +13,6 @@ import {
 } from "@/app/utils/textUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
 import { NextRequest } from "next/server";
-import { SpoonacularRecipeResponse } from "@/app/interfaces/spoonacularRecipeResponse";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url!);
@@ -84,9 +84,14 @@ export async function GET(request: NextRequest) {
 
     word2vec.trainWithSentences(instructionsWithoutStopWords);
 
-    const allFoundationFoods = foundationFoodsJSON.flatMap(category => category.items);
+    const allFoundationFoods = foundationFoodsJSON.flatMap(
+      (category) => category.items
+    );
 
-    const extractIngredients = word2vec.extractIngredients(splitInstructions, allFoundationFoods);
+    const extractIngredients = word2vec.extractIngredients(
+      splitInstructions,
+      allFoundationFoods
+    );
 
     const uniqueIngredients = [...new Set(extractIngredients)];
 

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Snackbar, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 
+import { Controller, useForm } from "react-hook-form";
 import { UserAuth } from "../context/AuthContext";
-import { useForm, Controller } from "react-hook-form";
 
 interface FormValues {
   name?: string;

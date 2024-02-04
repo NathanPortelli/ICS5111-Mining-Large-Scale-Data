@@ -15,18 +15,23 @@ export default function Home() {
         Personalised Diet Recommender
       </h1>
       <p className="mt-4 mb-8 text-2xl ml-9 mr-9 text-white">
-        Welcome to our diet recommendation web app! This platform, created using Next.js Framework, Python and 
-        <a className="text-blue-400" href="https://spoonacular.com/food-api/"> Spoonacular API</a>, provides
-        personalised dietary suggestions tailored to your Body Mass Index (BMI), preferences, dietary goals, 
-        and patterns from similar users.
+        Welcome to our diet recommendation web app! This platform, created using
+        Next.js Framework, Python and
+        <a className="text-blue-400" href="https://spoonacular.com/food-api/">
+          {" "}
+          Spoonacular API
+        </a>
+        , provides personalised dietary suggestions tailored to your Body Mass
+        Index (BMI), preferences, dietary goals, and patterns from similar
+        users.
       </p>
       <div className="text-lg mb-8 ml-9 mr-9 pl-3 pr-3 p-2 border-2 bg-gray-600 rounded-md shadow-md">
         <p className="text-2xl mb-4 font-semibold text-white">
           Project Details
         </p>
         <p className="text-white">
-          <b>Title:</b> Utilising Structured and Unstructured Data for Intelligent Diet
-          Recommendations
+          <b>Title:</b> Utilising Structured and Unstructured Data for
+          Intelligent Diet Recommendations
         </p>
         <p className="text-white">
           Created in fulfillment of the requirements for the ICS5111 Mining
@@ -35,19 +40,17 @@ export default function Home() {
             className="text-blue-400"
             href="https://github.com/NathanPortelli/"
           >
-            Nathan Portelli 
-          </a>
-          {" "}and{" "}  
-          <a
-            className="text-blue-400"
-            href="https://github.com/oleggrech7"
-          >
+            Nathan Portelli
+          </a>{" "}
+          and{" "}
+          <a className="text-blue-400" href="https://github.com/oleggrech7">
             Oleg Grech
           </a>
           .
         </p>
         <br />
-        <p className="text-white"><b>Email:</b>{" "}
+        <p className="text-white">
+          <b>Email:</b>{" "}
           <a
             className="text-blue-400 "
             href="mailto:nathan.portelli.19@um.edu.mt"
@@ -60,7 +63,7 @@ export default function Home() {
           </a>
         </p>
         <p className="text-white">
-          <b>Full project code available at:{" "}</b>
+          <b>Full project code available at: </b>
           <a
             className="text-blue-400"
             href="https://github.com/NathanPortelli/ICS5111-Mining-Large-Scale-Data"
@@ -72,10 +75,7 @@ export default function Home() {
           Public Datasets/Websites used:
         </p>
         <p className="text-xl">
-          <a
-            className="text-blue-400"
-            href="https://fdc.nal.usda.gov/"
-          >
+          <a className="text-blue-400" href="https://fdc.nal.usda.gov/">
             FoodData Central
           </a>
         </p>
@@ -88,10 +88,7 @@ export default function Home() {
           </a>
         </p>
         <p className="text-xl">
-          <a
-            className="text-blue-400"
-            href="https://spoonacular.com/"
-          >
+          <a className="text-blue-400" href="https://spoonacular.com/">
             Spoonacular
           </a>
         </p>

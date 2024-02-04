@@ -11,13 +11,7 @@ import Preferences from "./../components/preferences";
 
 const Account = () => {
   const [currentTab, setCurrentTab] = useState("personal");
-  const [error, setError] = useState<string | null>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const { userData } = UserAuth();
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
 
   return (
     <main className="flex flex-col items-center bg-gray-800">
@@ -74,14 +68,6 @@ const Account = () => {
           <CircularProgress />
         </div>
       )}
-
-      {/* Snackbar for displaying errors */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        message={error || ""}
-      />
     </main>
   );
 };

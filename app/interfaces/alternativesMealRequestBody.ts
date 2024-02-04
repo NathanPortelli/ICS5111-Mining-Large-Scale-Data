@@ -1,4 +1,4 @@
 export interface AlternativesMealRequestBody {
-    meal_title: string;
-    calories: number;
+  meal_title: string;
+  calories: number;
 }

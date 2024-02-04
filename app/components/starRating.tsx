@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const StarRating = ({ handleRating }) => {
   const [rating, setRating] = useState(0);

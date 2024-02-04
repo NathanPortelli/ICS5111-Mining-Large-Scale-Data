@@ -1,7 +1,7 @@
 export type ErrorMessageResponse = {
-    message: string;
+  message: string;
 };
-  
+
 export function errorResponse(error: ErrorMessageResponse, status = 400) {
   return new Response(JSON.stringify(error), {
     status,

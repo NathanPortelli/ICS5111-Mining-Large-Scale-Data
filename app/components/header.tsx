@@ -32,7 +32,6 @@ const Header = () => {
     }
 
     setShowDropdown(false);
-    
   }, [pathname, userData]);
 
   return (

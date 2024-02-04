@@ -1,4 +1,4 @@
-import { MealRequestBody, MealFoods } from "@/app/interfaces/mealRequestBody";
+import { MealFoods, MealRequestBody } from "@/app/interfaces/mealRequestBody";
 import { spoonacularBaseAPI } from "@/app/utils/baseSpoonacular";
 import { errorResponse, okResponse } from "@/app/utils/responses";
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
           case "lunch":
             caloriesPerMeal = total_calories * 0.5;
             break;
-          case "dinner": 
+          case "dinner":
             caloriesPerMeal = total_calories * 0.3;
             break;
           default:

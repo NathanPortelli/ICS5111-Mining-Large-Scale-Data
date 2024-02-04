@@ -1,8 +1,9 @@
-import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
 import foundationFoodsJSON from "@/app/data/foundation_foods.json";
+import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
 import stopwordsJSON from "@/app/data/stopwords.json";
-import { errorResponse, okResponse } from "@/app/utils/responses";
+import { SpoonacularRecipeResponse } from "@/app/interfaces/spoonacularRecipeResponse";
 import { spoonacularBaseAPI } from "@/app/utils/baseSpoonacular";
+import { errorResponse, okResponse } from "@/app/utils/responses";
 import {
   extractTextToArray,
   fixSentenceSpacing,
@@ -12,7 +13,6 @@ import {
 } from "@/app/utils/textUtil";
 import { Word2Vec } from "@/app/utils/word2vec";
 import { NextRequest } from "next/server";
-import { SpoonacularRecipeResponse } from "@/app/interfaces/spoonacularRecipeResponse";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url!);

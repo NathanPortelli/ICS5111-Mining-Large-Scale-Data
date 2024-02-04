@@ -2,17 +2,17 @@
 
 import {
   User,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { createContext, use, useContext, useEffect, useState } from "react";
-import { auth, db } from "../firebase";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
-import { FirestoreUser } from "../interfaces/firestoreUser";
-import { useLocalStorage } from "../hooks/localStorage";
 import { usePathname, useRouter } from "next/navigation";
+import { createContext, useContext, useEffect, useState } from "react";
+import { auth, db } from "../firebase";
+import { useLocalStorage } from "../hooks/localStorage";
+import { FirestoreUser } from "../interfaces/firestoreUser";
 
 const AuthContext = createContext({} as any);
 
@@ -105,7 +105,9 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, userData, signIn, signUp, logout, fetchUserData }}>
+    <AuthContext.Provider
+      value={{ user, userData, signIn, signUp, logout, fetchUserData }}
+    >
       {children}
     </AuthContext.Provider>
   );

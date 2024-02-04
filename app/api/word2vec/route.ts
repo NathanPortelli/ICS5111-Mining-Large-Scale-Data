@@ -1,7 +1,13 @@
-import { errorResponse, okResponse } from "@/app/utils/responses";
-import { extractTextToArray, fixSentenceSpacing, removeTags, removeWordsFromSentence, splitSentencesIntoWords } from "@/app/utils/textUtil";
-import { Word2Vec } from "@/app/utils/word2vec";
 import stopwordsJSON from "@/app/data/stopwords.json";
+import { errorResponse, okResponse } from "@/app/utils/responses";
+import {
+  extractTextToArray,
+  fixSentenceSpacing,
+  removeTags,
+  removeWordsFromSentence,
+  splitSentencesIntoWords,
+} from "@/app/utils/textUtil";
+import { Word2Vec } from "@/app/utils/word2vec";
 
 interface RequestBody {
   text: string;
@@ -26,9 +32,7 @@ export async function POST(request: Request) {
     let textWithoutStopWords: string[][] = [];
 
     textToWords.forEach((sentence) => {
-      textWithoutStopWords.push(
-        removeWordsFromSentence(sentence, stopWords)
-      );
+      textWithoutStopWords.push(removeWordsFromSentence(sentence, stopWords));
     });
 
     word2vec.addSentences(textWithoutStopWords);

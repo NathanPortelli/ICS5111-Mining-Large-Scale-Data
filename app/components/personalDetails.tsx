@@ -166,7 +166,8 @@ const PersonalDetails: FC = () => {
             control={control}
             rules={{
               required: "Age is required",
-              validate: (value) => value >= 1 || "Age must be greater or equal to 1",
+              validate: (value) =>
+                value >= 1 || "Age must be greater or equal to 1",
             }}
             render={({
               field: { onChange, value },
@@ -192,7 +193,8 @@ const PersonalDetails: FC = () => {
             control={control}
             rules={{
               required: "Height is required",
-              validate: (value) => value > 40 || "Height must be greater than 40 cm",
+              validate: (value) =>
+                value > 40 || "Height must be greater than 40 cm",
             }}
             render={({
               field: { onChange, value },
@@ -218,7 +220,8 @@ const PersonalDetails: FC = () => {
             control={control}
             rules={{
               required: "Weight is required",
-              validate: (value) => value > 10 || "Weight must be greater than 10 kg",
+              validate: (value) =>
+                value > 10 || "Weight must be greater than 10 kg",
             }}
             render={({
               field: { onChange, value },
