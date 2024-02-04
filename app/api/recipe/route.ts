@@ -1,4 +1,5 @@
 import foundationFoodsJSON from "@/app/data/foundation_foods.json";
+import jamieOliverRecipeInstructionsJSON from "@/app/data/jamie_oliver_all_recipe_instructions.json";
 import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
 import stopwordsJSON from "@/app/data/stopwords.json";
 import { SpoonacularRecipeResponse } from "@/app/interfaces/spoonacularRecipeResponse";
@@ -82,7 +83,7 @@ export async function GET(request: NextRequest) {
 
     word2vec.initializeVectors();
 
-    word2vec.trainWithSentences(instructionsWithoutStopWords);
+    word2vec.trainWithSentences(jamieOliverRecipeInstructionsJSON as unknown as string[][]);
 
     const allFoundationFoods = foundationFoodsJSON.flatMap(
       (category) => category.items

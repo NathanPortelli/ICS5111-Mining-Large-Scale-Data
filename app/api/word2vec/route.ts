@@ -1,3 +1,4 @@
+import jamieOliverRecipeInstructionsJSON from "@/app/data/jamie_oliver_all_recipe_instructions.json";
 import stopwordsJSON from "@/app/data/stopwords.json";
 import { errorResponse, okResponse } from "@/app/utils/responses";
 import {
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
 
     word2vec.initializeVectors();
 
-    word2vec.trainWithSentences(textWithoutStopWords);
+    word2vec.trainWithSentences(jamieOliverRecipeInstructionsJSON as unknown as string[][]);
 
     const wordList = Array.from(word2vec.vocab);
     const vectors = wordList.map((word) => word2vec.getWordVector(word));

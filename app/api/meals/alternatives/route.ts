@@ -1,4 +1,5 @@
 import foundationFoodsJSON from "@/app/data/foundation_foods.json";
+import jamieOliverRecipeInstructionsJSON from "@/app/data/jamie_oliver_all_recipe_instructions.json";
 import jamieOliverRecipesJSON from "@/app/data/jamie_oliver_food_recipes.json";
 import stopwordsJSON from "@/app/data/stopwords.json";
 import { AlternativesMealRequestBody } from "@/app/interfaces/alternativesMealRequestBody";
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
 
   word2vec.initializeVectors();
 
-  word2vec.trainWithSentences(titleWithoutStopWords);
+  word2vec.trainWithSentences(jamieOliverRecipeInstructionsJSON as unknown as string[][]);
 
   const allFoundationFoods = foundationFoodsJSON.flatMap(
     (category) => category.items

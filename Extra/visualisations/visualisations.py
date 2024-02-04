@@ -16,7 +16,7 @@ vectors = np.array(data['vectors'])
 # Common parameters
 scatter_params = dict(marker='o', s=100, alpha=0.7)
 
-# t-SNE Visualization
+# t-SNE Visualisation
 tsne = TSNE(n_components=2, random_state=42)
 vectors_2d_tsne = tsne.fit_transform(vectors)
 
@@ -29,13 +29,13 @@ for i, word in enumerate(words):
 legend_labels = [f'{i+1}: {word}' for i, word in enumerate(words)]
 plt.legend(handles=[], labels=legend_labels, loc='center left', bbox_to_anchor=(1, 0.5), fontsize='small', ncol=2, markerscale=0, borderaxespad=0.5, handlelength=0)
 
-plt.title('t-SNE Visualization of Word2Vec Embeddings')
+plt.title('t-SNE Visualisation of Word2Vec Embeddings')
 plt.axvline(0, color='k', linestyle='--', alpha=0.5)
 plt.axhline(0, color='k', linestyle='--', alpha=0.5)
 plt.tight_layout()  # Adjust layout to prevent clipping
 plt.show()
 
-# PCA Visualization
+# PCA Visualisation
 pca = PCA(n_components=2)
 vectors_2d_pca = pca.fit_transform(vectors)
 
@@ -47,7 +47,7 @@ for i, word in enumerate(words):
 # Create a custom legend with two rows, remove the dots, and center outside on the right
 plt.legend(handles=[], labels=legend_labels, loc='center left', bbox_to_anchor=(1, 0.5), fontsize='small', ncol=2, markerscale=0, borderaxespad=0.5, handlelength=0)
 
-plt.title('PCA Visualization of Word2Vec Embeddings')
+plt.title('PCA Visualisation of Word2Vec Embeddings')
 plt.axvline(0, color='k', linestyle='--', alpha=0.5)
 plt.axhline(0, color='k', linestyle='--', alpha=0.5)
 plt.tight_layout()  # Adjust layout to prevent clipping
