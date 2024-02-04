@@ -109,7 +109,7 @@ const Header = () => {
                     </Link>
                   </>
                 ) : (
-                  <Link href="/credentials">
+                  <Link href="/credentials" onClick={() => toggleDropdown()}>
                     <div className="flex items-center space-x-2 cursor-pointer">
                       <FaSignOutAlt />
                       <span>Login</span>
