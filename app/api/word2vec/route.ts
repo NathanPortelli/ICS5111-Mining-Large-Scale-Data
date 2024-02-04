@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     word2vec.initializeVectors();
 
-    word2vec.trainWithSentences(jamieOliverRecipeInstructionsJSON as unknown as string[][]);
+    word2vec.trainWithSentences(([] as string[][]).concat(jamieOliverRecipeInstructionsJSON as unknown as string[][], textWithoutStopWords));
 
     const wordList = Array.from(word2vec.vocab);
     const vectors = wordList.map((word) => word2vec.getWordVector(word));

@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
   word2vec.initializeVectors();
 
-  word2vec.trainWithSentences(jamieOliverRecipeInstructionsJSON as unknown as string[][]);
+  word2vec.trainWithSentences(([] as string[][]).concat(jamieOliverRecipeInstructionsJSON as unknown as string[][], titleWithoutStopWords));
 
   const allFoundationFoods = foundationFoodsJSON.flatMap(
     (category) => category.items

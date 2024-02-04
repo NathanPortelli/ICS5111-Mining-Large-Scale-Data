@@ -79,7 +79,10 @@ export async function GET(request: NextRequest) {
     word2vec.initializeVectors();
 
     word2vec.trainWithSentences(
-      jamieOliverRecipeInstructionsJSON as unknown as string[][]
+      ([] as string[][]).concat(
+        jamieOliverRecipeInstructionsJSON as unknown as string[][],
+        instructionsWithoutStopWords
+      )
     );
 
     const allFoundationFoods = foundationFoodsJSON.flatMap(
