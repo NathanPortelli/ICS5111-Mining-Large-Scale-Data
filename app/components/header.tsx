@@ -3,14 +3,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaCog, FaSignOutAlt, FaUser } from "react-icons/fa";
 
-import { auth } from "./../firebase";
-
-import { usePathname, useRouter } from "next/navigation";
-import { useLocalStorage } from "../hooks/localStorage";
+import { usePathname } from "next/navigation";
 import { UserAuth } from "../context/AuthContext";
 
 const Header = () => {
-  const router = useRouter();
   const pathname = usePathname();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNavBar, setShowNavBar] = useState(false);
@@ -34,6 +30,9 @@ const Header = () => {
     } else {
       setShowNavBar(false);
     }
+
+    setShowDropdown(false);
+    
   }, [pathname, userData]);
 
   return (
