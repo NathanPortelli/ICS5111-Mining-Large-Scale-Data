@@ -6,15 +6,18 @@
 
 Created in fulfillment of the requirements for the ICS5111 Mining Large Scale Data assignment by [Nathan Portelli](https://github.com/NathanPortelli/) and [Oleg Grech](https://github.com/oleggrech7).
 
-
-**Email:** nathan.portelli.19@um.edu.mt, oleg.grech.19@um.edu.mt
-
 ### Public Datasets/Websites used
 
 [FoodData Central](https://fdc.nal.usda.gov/) ; [Jamie Oliver Recipes](https://www.jamieoliver.com/recipes/) ; [Spoonacular](https://spoonacular.com/food-api/) ; [Stopwords](https://www.kaggle.com/datasets/heeraldedhia/stop-words-in-28-languages?select=english.txt)
 
+## Abstract
+
+This project aims to develop a personalised diet recommender system by leveraging text-mining techniques to extract insights from diverse data sources. Datasets comprising structured, semi-structured, and unstructured nutritional information and recipes, with the latter scraped using the Beautiful Soup library, are utilised to offer tailored meal plans matching individual needs. Word2Vec is also implemented for ingredient extraction from recipe data. The implementation identifies ingredients, calories, and nutritional values while considering users’ Basal Metabolic Rate (BMR) and preferences. Collaborative filtering is explored for recommending similar recipes based on user data. A Proof of concept, developed using Next.js and deployed on [ics5111.vercel.app](https://ics5111.vercel.app/), showcases intelligent meal plan recommendations. This prototype was well-received in a usability study, with an average SUS Score of 93.25.
+
+More information can be found in the project's [report](https://github.com/NathanPortelli/ICS5111-Mining-Large-Scale-Data/blob/main/Report/ICS5111%20Assignment%20-%20Report.pdf) or [presentation](https://github.com/NathanPortelli/ICS5111-Mining-Large-Scale-Data/blob/main/Report/ICS5111%20Assignment%20-%20Presentation.pdf).
+
 ## Vercel Deployment
-This application has been deployed online through Vercel via the link [ics5111.vercel.app](https://ics5111.vercel.app/).
+This application has been deployed online through Vercel via the link: [ics5111.vercel.app](https://ics5111.vercel.app/).
 
 ## To run the application locally
 - Open the folder in the IDE of your choice.
